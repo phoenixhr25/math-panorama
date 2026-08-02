@@ -157,12 +157,29 @@
   .piece.done label{ color:var(--ink-soft); text-decoration:line-through; text-decoration-color:var(--grid-strong); }
   .piece .tag-known{ font-family:var(--mono); font-size:.68rem; color:var(--teal); border:1px solid var(--teal); padding:0 .35em; border-radius:2px; margin-left:.4em; }
   .piece .tag-note{ font-family:var(--mono); font-size:.68rem; color:var(--oxblood); margin-left:.4em; }
-  .zoom-btn{
+  .content-btn{
     font-family:var(--mono); font-size:.72rem; color:var(--brass); background:none; border:1px solid var(--brass-soft);
     padding:.15rem .5rem; cursor:pointer; margin-left:.5em; border-radius:2px;
   }
-  .zoom-chain{ font-size:.82rem; color:var(--ink-soft); margin:.5rem 0 .2rem 1.7rem; line-height:1.9; display:none; }
-  .zoom-chain.show{ display:block; }
+  .content-btn:focus-visible{ outline:2px solid var(--brass); outline-offset:2px; }
+  .piece-content{
+    display:none; margin:.3rem 0 .6rem 1.7rem; padding:.7rem .9rem; border-left:2px solid var(--brass-soft);
+    background:var(--paper-2); border-radius:0 3px 3px 0;
+  }
+  .piece-content.open{ display:block; }
+  .concept-row{ display:flex; flex-wrap:wrap; gap:.4rem; }
+  .concept-chip{
+    font-size:.78rem; color:var(--ink); background:var(--paper-3); border:1px solid var(--grid-strong);
+    padding:.2rem .55rem; border-radius:2px; line-height:1.4;
+  }
+  .src-list{ margin-top:.55rem; display:flex; flex-direction:column; gap:.3rem; }
+  .src-item{ font-size:.8rem; color:var(--ink-soft); line-height:1.5; }
+  .src-item .src-k{
+    font-family:var(--mono); font-size:.68rem; color:var(--teal); border:1px solid var(--teal);
+    padding:0 .35em; border-radius:2px; margin-right:.5em; white-space:nowrap;
+  }
+  .zoom-label{ font-family:var(--mono); font-size:.68rem; color:var(--oxblood); margin-top:.6rem; text-transform:uppercase; letter-spacing:.03em; }
+  .zoom-chain{ font-size:.82rem; color:var(--ink-soft); margin-top:.25rem; line-height:1.9; }
 
   /* ---------- weight table (year3) ---------- */
   .weight-table{ width:100%; border-collapse:collapse; }
@@ -277,7 +294,7 @@
       <h2>第 1 年：100 块地形图</h2>
       <span class="tag">01 / Terrain, low resolution</span>
     </div>
-    <p class="lede">每块 = 一个数学分支/概念，只求"知道它存在、跟谁接壤、一句话说清是什么"。<span class="badge-priority">●</span> 珠色标记 = 优先方向（几何 + 应用）；<span class="tag-known" style="display:inline-block;position:relative;top:-1px;">已知</span> = 经济学/CIMA 范围内，这一年只需唤醒记忆。点开每个区域勾选进度，自动保存在这台设备上。</p>
+    <p class="lede">每块 = 一个数学分支/概念，只求"知道它存在、跟谁接壤、一句话说清是什么"。<span class="badge-priority">●</span> 珠色标记 = 优先方向（几何 + 应用）；<span class="tag-known" style="display:inline-block;position:relative;top:-1px;">已知</span> = 经济学/CIMA 范围内，这一年只需唤醒记忆。带"▸ 核心概念"按钮的块，点开能看到 1-5 个核心概念 + 信源推荐——目前只填了第 1 年优先方向，其余区域先留白，不提前穷尽。点开每个区域勾选进度，自动保存在这台设备上。</p>
     <div class="mosaic" id="mosaic"></div>
   </section>
 
@@ -366,46 +383,46 @@
     { id:'I', name:'数与代数基础', region:'', blankNote:'Jacob Tsimerman（算术几何/模型论）钉在这一区，但地图上目前没有对应的格子 —— 地图空白', pieces:[
       {n:'集合论基础'},
       {n:'数系与数域'},
-      {n:'初等代数', tags:['known','priority']},
-      {n:'线性代数：向量与矩阵', tags:['known','priority']},
-      {n:'线性代数：特征值与特征向量', tags:['known-p','priority']},
+      {n:'初等代数', tags:['known','priority'], concepts:['方程与不等式','函数与图像','多项式运算'], srcs:[{t:'复习本科/CIMA 笔记即可',k:'复习'}]},
+      {n:'线性代数：向量与矩阵', tags:['known','priority'], concepts:['向量空间与基','矩阵乘法与线性变换','行列式的意义'], srcs:[{t:'Gilbert Strang，<em>Introduction to Linear Algebra</em>',k:'教材'}]},
+      {n:'线性代数：特征值与特征向量', tags:['known-p','priority'], concepts:['特征值方程 Av=λv','对角化','谱定理'], srcs:[{t:'3Blue1Brown《线性代数的本质》',k:'视频·中文字幕'}]},
       {n:'抽象代数入门：群'},
       {n:'抽象代数入门：环与域'},
       {n:'数论基础'},
       {n:'多项式与代数方程'},
     ]},
     { id:'II', name:'几何与空间', region:'重点方向', blankNote:'John Pardon（辛几何）钉在这一区，但地图上目前没有对应的格子 —— 地图空白', pieces:[
-      {n:'欧几里得几何公理体系', tags:['priority']},
-      {n:'解析几何', tags:['priority']},
-      {n:'三角学', tags:['priority']},
-      {n:'向量几何', tags:['priority']},
+      {n:'欧几里得几何公理体系', tags:['priority'], concepts:['五大公设','平行公理的特殊性','从公理到定理的证明链条'], srcs:[{t:'Hartshorne，<em>Geometry: Euclid and Beyond</em>',k:'教材'}]},
+      {n:'解析几何', tags:['priority'], concepts:['坐标系与方程','圆锥曲线','距离与角度的代数化'], srcs:[{t:'复习本科解析几何教材即可',k:'复习'}]},
+      {n:'三角学', tags:['priority'], concepts:['单位圆定义','三角恒等式','傅里叶级数的入口'], srcs:[{t:'复习本科教材，为傅里叶分析打底',k:'复习'}]},
+      {n:'向量几何', tags:['priority'], concepts:['点积与投影','叉积与法向量','向量空间的仿射结构'], srcs:[{t:'Strang 线代教材前几章',k:'教材'}]},
       {n:'仿射几何'},
       {n:'射影几何'},
       {n:'非欧几何（双曲/椭圆）'},
-      {n:'微分几何：曲线与曲率', tags:['priority']},
+      {n:'微分几何：曲线与曲率', tags:['priority'], concepts:['弧长参数化','曲率与挠率','Frenet 标架'], srcs:[{t:'do Carmo，<em>Differential Geometry of Curves and Surfaces</em>',k:'教材·该方向标准入门'}]},
       {n:'微分几何：曲面与流形初步'},
       {n:'拓扑学入门：点集拓扑'},
       {n:'拓扑学：同伦与同调直觉'},
-      {n:'凸几何', tags:['priority'], zoom:true},
-      {n:'计算几何', tags:['priority']},
-      {n:'几何测度论直觉', tags:['landmark'], note:'王虹方向'},
-      {n:'分形几何', tags:['priority']},
+      {n:'凸几何', tags:['priority'], zoom:true, concepts:['凸集与凸包','支持超平面定理','John 椭球'], srcs:[{t:'Boyd & Vandenberghe，<em>Convex Optimization</em> 第2章（斯坦福官网免费 PDF）',k:'教材·免费'}]},
+      {n:'计算几何', tags:['priority'], concepts:['凸包算法','Voronoi 图与 Delaunay 三角剖分','空间索引结构'], srcs:[{t:'de Berg et al.，<em>Computational Geometry: Algorithms and Applications</em>',k:'教材'}]},
+      {n:'几何测度论直觉', tags:['landmark'], note:'王虹方向', concepts:['Hausdorff 测度与维数','集合的"大小"如何度量','Kakeya 集的直觉'], srcs:[{t:'王虹与 Joshua Zahl 论文的科普解读（见地标层）',k:'科普导读'}]},
+      {n:'分形几何', tags:['priority'], concepts:['自相似性','Hausdorff 维数','迭代函数系统'], srcs:[{t:'Mandelbrot，<em>The Fractal Geometry of Nature</em>',k:'科普·直觉建立首选'}]},
     ]},
     { id:'III', name:'分析学', region:'王虹 + 邓煜方向重点', pieces:[
-      {n:'极限与连续性', tags:['known','priority']},
-      {n:'微分学', tags:['known','priority']},
-      {n:'积分学', tags:['known','priority']},
+      {n:'极限与连续性', tags:['known','priority'], concepts:['ε-δ 定义','连续性与介值定理'], srcs:[{t:'复习本科微积分笔记',k:'复习'}]},
+      {n:'微分学', tags:['known','priority'], concepts:['导数的几何意义','链式法则','泰勒展开'], srcs:[{t:'复习本科微积分笔记',k:'复习'}]},
+      {n:'积分学', tags:['known','priority'], concepts:['黎曼积分','微积分基本定理'], srcs:[{t:'复习本科微积分笔记',k:'复习'}]},
       {n:'级数与收敛'},
-      {n:'多元微积分', tags:['known-p','priority']},
+      {n:'多元微积分', tags:['known-p','priority'], concepts:['偏导数与梯度','多重积分','拉格朗日乘数法的几何直觉'], srcs:[{t:'Strang，<em>Calculus</em>（MIT 公开课配套）',k:'教材·免费'}]},
       {n:'常微分方程'},
-      {n:'偏微分方程入门', tags:['priority'], note:'邓煜方向'},
+      {n:'偏微分方程入门', tags:['priority'], note:'邓煜方向', concepts:['一阶/二阶 PDE 分类','边界条件与初值问题','波动方程与热方程'], srcs:[{t:'Strauss，<em>Partial Differential Equations: An Introduction</em>',k:'教材'}]},
       {n:'实分析：测度与积分'},
       {n:'复分析基础'},
-      {n:'傅里叶分析', tags:['priority'], note:'王虹方向'},
-      {n:'调和分析入门', tags:['priority'], note:'王虹方向'},
+      {n:'傅里叶分析', tags:['priority'], note:'王虹方向', concepts:['傅里叶级数','傅里叶变换','频域与时域的对偶'], srcs:[{t:'Stein & Shakarchi，<em>Fourier Analysis: An Introduction</em>',k:'教材·普林斯顿分析系列，王虹这条线的标准起点'}]},
+      {n:'调和分析入门', tags:['priority'], note:'王虹方向', concepts:['Calderón–Zygmund 理论直觉','极大函数','振荡积分初步'], srcs:[{t:'Stein & Shakarchi 系列后续卷',k:'教材'}]},
       {n:'泛函分析入门'},
-      {n:'统计力学与动理论基础：玻尔兹曼方程', tags:['priority','landmark'], note:'邓煜方向'},
-      {n:'标度极限与涌现：Boltzmann-Grad 极限', tags:['priority','landmark'], note:'邓煜方向'},
+      {n:'统计力学与动理论基础：玻尔兹曼方程', tags:['priority','landmark'], note:'邓煜方向', concepts:['相空间与分布函数','碰撞项','H 定理与熵增'], srcs:[{t:'Cercignani，<em>The Boltzmann Equation and Its Applications</em>；或 Villani 的科普讲稿',k:'教材/科普'}]},
+      {n:'标度极限与涌现：Boltzmann-Grad 极限', tags:['priority','landmark'], note:'邓煜方向', concepts:['Boltzmann-Grad 标度','测度为零集合的直觉','Lanford 定理'], srcs:[{t:'邓煜、Hani、Ma 论文引言；先读科普解读（见地标层）',k:'论文/科普'}]},
     ]},
     { id:'IV', name:'概率与统计', region:'', pieces:[
       {n:'概率论基础', tags:['known']},
@@ -417,30 +434,30 @@
       {n:'图论'},{n:'组合数学'},{n:'数理逻辑'},{n:'算法复杂度理论'},{n:'博弈论'},{n:'组合优化'},{n:'编码理论'},
     ]},
     { id:'VI', name:'优化理论', region:'重点方向', pieces:[
-      {n:'线性规划', tags:['known-p','priority']},
-      {n:'凸优化', tags:['priority']},
+      {n:'线性规划', tags:['known-p','priority'], concepts:['标准型与可行域','单纯形法直觉','对偶问题'], srcs:[{t:'Hillier & Lieberman，<em>Introduction to Operations Research</em>',k:'教材'}]},
+      {n:'凸优化', tags:['priority'], concepts:['凸函数与凸集','KKT 条件','对偶间隙'], srcs:[{t:'Boyd & Vandenberghe，<em>Convex Optimization</em>（斯坦福官网免费 PDF）',k:'教材·免费'}]},
       {n:'非线性优化'},{n:'整数规划'},
-      {n:'动态规划', tags:['priority']},
+      {n:'动态规划', tags:['priority'], concepts:['最优子结构','状态转移方程','Bellman 方程'], srcs:[{t:'Bertsekas，<em>Dynamic Programming and Optimal Control</em>',k:'教材'}]},
       {n:'运筹学'},
-      {n:'梯度下降与迭代方法', tags:['priority']},
+      {n:'梯度下降与迭代方法', tags:['priority'], concepts:['梯度方向与步长','收敛速度','随机梯度下降'], srcs:[{t:'Boyd & Vandenberghe 第9章；或吴恩达机器学习课程对应章节',k:'教材/公开课'}]},
       {n:'拉格朗日乘数法与对偶理论'},
     ]},
     { id:'VII', name:'应用数学：机器学习与 AI 数学', region:'重点方向', pieces:[
-      {n:'线性代数在 ML 中的应用（SVD/PCA）', tags:['priority']},
+      {n:'线性代数在 ML 中的应用（SVD/PCA）', tags:['priority'], concepts:['奇异值分解的几何意义','主成分分析降维','低秩近似'], srcs:[{t:'Strang，<em>Linear Algebra and Learning from Data</em>',k:'教材·专为 ML 写的线代'}]},
       {n:'矩阵微积分'},{n:'概率图模型'},{n:'优化在深度学习中的应用'},{n:'信息几何'},{n:'核方法与再生核希尔伯特空间'},
-      {n:'高维几何与维度诅咒', tags:['priority']},
+      {n:'高维几何与维度诅咒', tags:['priority'], concepts:['高维球体积中心化现象','距离集中现象','近邻搜索失效'], srcs:[{t:'Vershynin，<em>High-Dimensional Probability</em> 第1章直觉部分',k:'教材'}]},
       {n:'神经网络的数学基础'},{n:'强化学习中的数学（MDP）'},{n:'图神经网络的数学基础'},
-      {n:'度量学习与嵌入空间几何', tags:['priority']},
+      {n:'度量学习与嵌入空间几何', tags:['priority'], concepts:['距离度量的学习','嵌入空间的几何结构','对比学习的几何直觉'], srcs:[{t:'Kulis，<em>Metric Learning: A Survey</em>',k:'综述'}]},
       {n:'最优传输理论'},
     ]},
     { id:'VIII', name:'应用数学：零售与空间分析', region:'重点方向，呼应 AI-Space-Geometry', pieces:[
-      {n:'空间统计学', tags:['priority']},
-      {n:'选址理论与区位几何', tags:['priority']},
+      {n:'空间统计学', tags:['priority'], concepts:['空间自相关','Moran I 统计量','克里金插值'], srcs:[{t:'Cressie，<em>Statistics for Spatial Data</em>',k:'教材'}]},
+      {n:'选址理论与区位几何', tags:['priority'], concepts:['韦伯问题（最小化运输成本选址）','p-中位问题','引力模型'], srcs:[{t:'Daskin，<em>Network and Discrete Location</em>',k:'教材'}]},
       {n:'网络分析与供应链几何'},
-      {n:'排队论', tags:['priority']},
-      {n:'库存优化数学模型', tags:['priority']},
-      {n:'计量经济学中的几何直觉', tags:['known-p','priority']},
-      {n:'数据可视化的几何原理', tags:['priority']},
+      {n:'排队论', tags:['priority'], concepts:['M/M/1 排队模型','Little 定律','服务水平与容量权衡'], srcs:[{t:'Hillier & Lieberman 运筹学教材相关章节',k:'教材'}]},
+      {n:'库存优化数学模型', tags:['priority'], concepts:['EOQ 经济订货量模型','安全库存与服务水平','(s,S) 策略'], srcs:[{t:'Silver, Pyke & Peterson，<em>Inventory Management and Production Planning</em>',k:'教材'}]},
+      {n:'计量经济学中的几何直觉', tags:['known-p','priority'], concepts:['最小二乘法的投影几何','回归系数的向量解释'], srcs:[{t:'复习计量经济学笔记，或 Davidson & MacKinnon 教材几何章节',k:'复习/教材'}]},
+      {n:'数据可视化的几何原理', tags:['priority'], concepts:['视觉编码与感知','图表类型与数据结构的映射'], srcs:[{t:'Tufte，<em>The Visual Display of Quantitative Information</em>',k:'教材·经典'}]},
       {n:'空间数据结构（KD-tree/R-tree）'},
     ]},
     { id:'IX', name:'数学基础与哲学', region:'', pieces:[
@@ -450,8 +467,8 @@
       {n:'Kakeya 猜想与其历史', tags:['landmark'], note:'王虹方向'},
       {n:'几何测度论进阶'},{n:'调和分析进阶：振荡积分'},{n:'加性组合数学'},{n:'数论中的几何方法'},{n:'随机矩阵理论'},
       {n:'张量与多重线性代数'},{n:'微分方程的几何视角（动力系统）'},{n:'混沌理论与分岔'},{n:'范畴论初步'},
-      {n:'几何深度学习（Geometric Deep Learning）', tags:['priority']},
-      {n:'希尔伯特第六问题：从牛顿力学到流体方程', tags:['priority','landmark'], note:'邓煜方向'},
+      {n:'几何深度学习（Geometric Deep Learning）', tags:['priority'], concepts:['对称性与等变性','图神经网络的几何视角','流形上的卷积'], srcs:[{t:'Bronstein et al.，<em>Geometric Deep Learning: Grids, Groups, Graphs, Geodesics, and Gauges</em>（开放获取"蓝皮书"）',k:'综述·免费'}]},
+      {n:'希尔伯特第六问题：从牛顿力学到流体方程', tags:['priority','landmark'], note:'邓煜方向', concepts:['希尔伯特23问的背景','微观到宏观的标度极限','涌现与统计压缩'], srcs:[{t:'邓煜等人论文引言；你自己写过的"一亿亿个可逆粒子"科普文正好是同一素材',k:'论文/自有素材'}]},
     ]},
   ];
 
@@ -549,17 +566,33 @@
         '<input type="checkbox" id="' + id + '"' + (checked ? ' checked' : '') + ' />' +
         '<label for="' + id + '">' + tagBadges(p.tags) + p.n + pieceKnownLabel(p.tags) +
         (p.note ? '<span class="tag-note">' + p.note + '</span>' : '') +
-        (p.zoom ? '<button type="button" class="zoom-btn" data-zoom="' + id + '">▸ 放大示例</button>' : '') +
+        (p.concepts ? '<button type="button" class="content-btn" data-content="' + id + '">▸ 核心概念</button>' : '') +
         '</label>';
 
       list.appendChild(row);
 
-      if(p.zoom){
-        var chain = document.createElement('div');
-        chain.className = 'zoom-chain';
-        chain.id = 'zoom-' + id;
-        chain.textContent = zoomChain.join(' → ');
-        list.appendChild(chain);
+      if(p.concepts){
+        var content = document.createElement('div');
+        content.className = 'piece-content';
+        content.id = 'content-' + id;
+
+        var html = '<div class="concept-row">' + p.concepts.map(function(c){
+          return '<span class="concept-chip">' + c + '</span>';
+        }).join('') + '</div>';
+
+        if(p.srcs && p.srcs.length){
+          html += '<div class="src-list">' + p.srcs.map(function(s){
+            return '<div class="src-item"><span class="src-k">' + s.k + '</span><span class="src-t">' + s.t + '</span></div>';
+          }).join('') + '</div>';
+        }
+
+        if(p.zoom){
+          html += '<div class="zoom-label">分形放大示例 · 第 3 年会怎么裂变</div>' +
+            '<div class="zoom-chain">' + zoomChain.join(' → ') + '</div>';
+        }
+
+        content.innerHTML = html;
+        list.appendChild(content);
       }
     });
 
@@ -594,12 +627,12 @@
   });
 
   mosaic.addEventListener('click', function(e){
-    var btn = e.target.closest('.zoom-btn');
+    var btn = e.target.closest('.content-btn');
     if(btn){
-      var chain = document.getElementById('zoom-' + btn.dataset.zoom);
-      if(chain){
-        chain.classList.toggle('show');
-        btn.textContent = chain.classList.contains('show') ? '▾ 收起' : '▸ 放大示例';
+      var content = document.getElementById('content-' + btn.dataset.content);
+      if(content){
+        content.classList.toggle('open');
+        btn.textContent = content.classList.contains('open') ? '▾ 收起' : '▸ 核心概念';
       }
     }
   });
