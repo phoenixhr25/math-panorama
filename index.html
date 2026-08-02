@@ -1,0 +1,644 @@
+<title>数学全景图 — 五年拼图计划</title>
+<style>
+  :root{
+    --ink:#24312A;
+    --ink-soft:#4A5A4F;
+    --paper:#EEEFE5;
+    --paper-2:#E3E5D6;
+    --paper-3:#D9DBC9;
+    --grid:#C7C9B8;
+    --grid-strong:#AEB19B;
+    --brass:#8A5A2B;
+    --brass-soft:#C9A06B;
+    --oxblood:#9B4A3F;
+    --oxblood-soft:#C98D82;
+    --teal:#3E6359;
+    --shadow: 0 1px 0 rgba(36,49,42,.08);
+    --serif:'Noto Serif SC','Songti SC','STSong',serif;
+    --sans:-apple-system,BlinkMacSystemFont,'PingFang SC','Noto Sans SC','Hiragino Sans GB',sans-serif;
+    --mono:ui-monospace,'SF Mono',Menlo,Consolas,'Noto Sans Mono CJK SC',monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --ink:#E7E7DC;
+      --ink-soft:#AFB9AC;
+      --paper:#14181B;
+      --paper-2:#1B2124;
+      --paper-3:#232B2C;
+      --grid:#2A3130;
+      --grid-strong:#3A4241;
+      --brass:#C99A4A;
+      --brass-soft:#8A6B3E;
+      --oxblood:#D4796A;
+      --oxblood-soft:#8A4D44;
+      --teal:#7FA89C;
+      --shadow: 0 1px 0 rgba(0,0,0,.4);
+    }
+  }
+  :root[data-theme="dark"]{
+    --ink:#E7E7DC; --ink-soft:#AFB9AC; --paper:#14181B; --paper-2:#1B2124; --paper-3:#232B2C;
+    --grid:#2A3130; --grid-strong:#3A4241; --brass:#C99A4A; --brass-soft:#8A6B3E;
+    --oxblood:#D4796A; --oxblood-soft:#8A4D44; --teal:#7FA89C; --shadow: 0 1px 0 rgba(0,0,0,.4);
+  }
+  :root[data-theme="light"]{
+    --ink:#24312A; --ink-soft:#4A5A4F; --paper:#EEEFE5; --paper-2:#E3E5D6; --paper-3:#D9DBC9;
+    --grid:#C7C9B8; --grid-strong:#AEB19B; --brass:#8A5A2B; --brass-soft:#C9A06B;
+    --oxblood:#9B4A3F; --oxblood-soft:#C98D82; --teal:#3E6359; --shadow: 0 1px 0 rgba(36,49,42,.08);
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--paper); color:var(--ink); font-family:var(--sans);
+    line-height:1.6; -webkit-font-smoothing:antialiased;
+  }
+  ::selection{ background:var(--brass); color:var(--paper); }
+  a{ color:inherit; }
+  h1,h2,h3{ font-family:var(--serif); font-weight:700; text-wrap:balance; margin:0; }
+  .num{ font-family:var(--mono); font-variant-numeric:tabular-nums; }
+  .eyebrow{
+    font-family:var(--mono); font-size:.72rem; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--ink-soft);
+  }
+
+  /* ---------- masthead ---------- */
+  .masthead{
+    border-bottom:2px solid var(--ink);
+    padding:2.6rem clamp(1.2rem,4vw,3rem) 1.6rem;
+    max-width:1160px; margin:0 auto;
+  }
+  .masthead-top{
+    display:flex; justify-content:space-between; align-items:baseline; gap:1rem; flex-wrap:wrap;
+    border-bottom:1px solid var(--grid); padding-bottom:1rem; margin-bottom:1.4rem;
+  }
+  .masthead h1{ font-size:clamp(1.7rem,3.2vw,2.4rem); letter-spacing:.01em; }
+  .masthead .quote{
+    font-family:var(--serif); font-size:clamp(1rem,1.6vw,1.15rem); color:var(--ink-soft);
+    max-width:38em; margin-top:.9rem; font-style:italic;
+  }
+  .coord-strip{
+    display:flex; gap:0; margin-top:1.6rem; border:1px solid var(--grid-strong); flex-wrap:wrap;
+  }
+  .coord-cell{
+    flex:1 1 140px; padding:.65rem .9rem; border-right:1px solid var(--grid-strong);
+  }
+  .coord-cell:last-child{ border-right:none; }
+  .coord-cell .k{ font-family:var(--mono); font-size:.68rem; letter-spacing:.1em; color:var(--ink-soft); text-transform:uppercase; }
+  .coord-cell .v{ font-family:var(--mono); font-size:1.05rem; margin-top:.15rem; }
+
+  .progress-row{ margin-top:1.4rem; }
+  .progress-label{ display:flex; justify-content:space-between; font-family:var(--mono); font-size:.78rem; color:var(--ink-soft); margin-bottom:.35rem;}
+  .progress-track{ height:8px; background:var(--paper-2); border:1px solid var(--grid-strong); position:relative; }
+  .progress-fill{ height:100%; background:var(--brass); width:0%; transition:width .4s ease; }
+  @media (prefers-reduced-motion:reduce){ .progress-fill{ transition:none; } }
+
+  /* ---------- sticky index nav ---------- */
+  .chart-index{
+    position:sticky; top:0; z-index:10; background:var(--paper); border-bottom:1px solid var(--grid-strong);
+    backdrop-filter:blur(3px);
+  }
+  .chart-index ol{
+    list-style:none; margin:0; padding:0; display:flex; max-width:1160px; margin:0 auto; overflow-x:auto;
+  }
+  .chart-index li{ flex:none; }
+  .chart-index a{
+    display:block; padding:.75rem 1.1rem; font-family:var(--mono); font-size:.76rem; letter-spacing:.06em;
+    text-transform:uppercase; text-decoration:none; color:var(--ink-soft); border-right:1px solid var(--grid);
+    white-space:nowrap;
+  }
+  .chart-index a:hover, .chart-index a:focus-visible{ color:var(--ink); background:var(--paper-2); }
+  .chart-index .idx-n{ color:var(--brass); margin-right:.4em; }
+
+  main{ max-width:1160px; margin:0 auto; padding:0 clamp(1.2rem,4vw,3rem); }
+  section{ padding:3rem 0; border-bottom:1px solid var(--grid); }
+  section:last-of-type{ border-bottom:none; }
+  .section-head{ display:flex; justify-content:space-between; align-items:flex-end; gap:1rem; flex-wrap:wrap; margin-bottom:1.6rem;}
+  .section-head h2{ font-size:clamp(1.3rem,2.2vw,1.7rem); }
+  .section-head .tag{ font-family:var(--mono); font-size:.74rem; color:var(--brass); text-transform:uppercase; letter-spacing:.08em; }
+  .lede{ max-width:62ch; color:var(--ink-soft); margin-bottom:1.6rem; }
+  .lede strong{ color:var(--ink); font-weight:600; }
+
+  /* ---------- calibration table ---------- */
+  .layer-table{ width:100%; border-collapse:collapse; font-size:.92rem; }
+  .layer-table th, .layer-table td{ text-align:left; padding:.7rem .9rem; border-bottom:1px solid var(--grid); vertical-align:top; }
+  .layer-table th{ font-family:var(--mono); font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-soft); border-bottom:2px solid var(--ink); }
+  .layer-table tr.target td{ background:var(--paper-2); }
+  .layer-table td.lv{ font-family:var(--mono); white-space:nowrap; }
+  .table-wrap{ overflow-x:auto; }
+  .north-star{
+    margin-top:1.4rem; padding:1rem 1.2rem; border-left:3px solid var(--brass); background:var(--paper-2);
+    font-size:.95rem;
+  }
+
+  /* ---------- mosaic map ---------- */
+  .mosaic{ display:flex; flex-wrap:wrap; gap:2px; border:1px solid var(--ink); }
+  .parcel{ border:none; background:var(--paper); flex-basis:200px; min-width:200px; }
+  .parcel + .parcel{ border-left:1px solid var(--grid-strong); }
+  .parcel summary{
+    list-style:none; cursor:pointer; padding:.9rem 1rem; display:flex; flex-direction:column; gap:.3rem;
+  }
+  .parcel summary::-webkit-details-marker{ display:none; }
+  .parcel summary:focus-visible{ outline:2px solid var(--brass); outline-offset:-2px; }
+  .parcel summary:hover{ background:var(--paper-2); }
+  .parcel[open] summary{ background:var(--paper-2); border-bottom:1px solid var(--grid-strong); }
+  .p-id{ font-family:var(--mono); font-size:.7rem; color:var(--brass); letter-spacing:.06em; }
+  .p-name{ font-family:var(--serif); font-size:1.02rem; font-weight:700; }
+  .p-meta{ display:flex; justify-content:space-between; align-items:center; font-family:var(--mono); font-size:.72rem; color:var(--ink-soft); }
+  .p-badges{ display:flex; gap:.3rem; }
+  .badge-priority{ color:var(--brass); }
+  .badge-landmark{ color:var(--oxblood); }
+  .p-blank{ font-size:.72rem; color:var(--oxblood); font-family:var(--mono); padding:0 1rem .7rem; }
+  .piece-list{ padding:.4rem 1rem 1rem; display:flex; flex-direction:column; gap:.1rem; }
+  .piece{ display:flex; align-items:baseline; gap:.55rem; padding:.4rem 0; border-bottom:1px dotted var(--grid); font-size:.88rem; }
+  .piece input[type=checkbox]{
+    width:15px; height:15px; accent-color:var(--brass); margin-top:.15rem; flex:none;
+  }
+  .piece input:focus-visible{ outline:2px solid var(--brass); outline-offset:2px; }
+  .piece label{ flex:1; cursor:pointer; }
+  .piece.done label{ color:var(--ink-soft); text-decoration:line-through; text-decoration-color:var(--grid-strong); }
+  .piece .tag-known{ font-family:var(--mono); font-size:.68rem; color:var(--teal); border:1px solid var(--teal); padding:0 .35em; border-radius:2px; margin-left:.4em; }
+  .piece .tag-note{ font-family:var(--mono); font-size:.68rem; color:var(--oxblood); margin-left:.4em; }
+  .zoom-btn{
+    font-family:var(--mono); font-size:.72rem; color:var(--brass); background:none; border:1px solid var(--brass-soft);
+    padding:.15rem .5rem; cursor:pointer; margin-left:.5em; border-radius:2px;
+  }
+  .zoom-chain{ font-size:.82rem; color:var(--ink-soft); margin:.5rem 0 .2rem 1.7rem; line-height:1.9; display:none; }
+  .zoom-chain.show{ display:block; }
+
+  /* ---------- weight table (year3) ---------- */
+  .weight-table{ width:100%; border-collapse:collapse; }
+  .weight-table th, .weight-table td{ padding:.65rem .8rem; border-bottom:1px solid var(--grid); text-align:left; font-size:.9rem; }
+  .weight-table th{ font-family:var(--mono); font-size:.72rem; text-transform:uppercase; color:var(--ink-soft); border-bottom:2px solid var(--ink); }
+  .weight-table td.pct{ font-family:var(--mono); text-align:right; }
+  .weight-bar{ height:6px; background:var(--paper-3); margin-top:.3rem; position:relative; }
+  .weight-bar i{ position:absolute; inset:0; background:var(--brass); }
+
+  .zoom-demo{ margin-top:1.6rem; border:1px solid var(--grid-strong); padding:1.2rem; }
+  .zoom-demo .eyebrow{ margin-bottom:.5rem; }
+  .zoom-flow{ display:flex; flex-wrap:wrap; gap:.4rem; align-items:center; font-size:.85rem; margin-top:.6rem; }
+  .zoom-flow span.node{ padding:.25rem .55rem; border:1px solid var(--grid-strong); background:var(--paper-2); font-family:var(--mono); font-size:.78rem; }
+  .zoom-flow span.arrow{ color:var(--ink-soft); }
+
+  /* ---------- year5 tracks ---------- */
+  .tracks{ display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:1px; background:var(--grid-strong); border:1px solid var(--grid-strong); }
+  .track{ background:var(--paper); padding:1.2rem; }
+  .track .t-n{ font-family:var(--mono); color:var(--brass); font-size:.78rem; }
+  .track h3{ font-size:1rem; margin:.3rem 0 .5rem; }
+  .track p{ font-size:.87rem; color:var(--ink-soft); margin:0; }
+
+  /* ---------- landmarks ---------- */
+  .landmark-2026{ display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:1px; background:var(--grid-strong); border:1px solid var(--grid-strong); margin-bottom:2rem; }
+  .lcard{ background:var(--paper); padding:1.2rem; position:relative; }
+  .lcard.blank{ opacity:.75; }
+  .lcard .l-year{ font-family:var(--mono); font-size:.72rem; color:var(--oxblood); }
+  .lcard h3{ font-size:1.15rem; margin:.25rem 0 .15rem; }
+  .lcard .l-field{ font-family:var(--mono); font-size:.76rem; color:var(--ink-soft); margin-bottom:.6rem; }
+  .lcard .l-ach{ font-size:.87rem; }
+  .lcard .l-region{ margin-top:.7rem; font-family:var(--mono); font-size:.7rem; color:var(--brass); }
+  .lcard .l-flag{ margin-top:.5rem; font-family:var(--mono); font-size:.7rem; color:var(--oxblood); }
+
+  .hist-group{ margin-bottom:1.4rem; }
+  .hist-group h4{ font-family:var(--mono); font-size:.76rem; letter-spacing:.04em; color:var(--ink-soft); text-transform:none; margin-bottom:.5rem; font-weight:600; }
+  .hist-list{ display:flex; flex-direction:column; }
+  .hist-item{ display:flex; gap:.8rem; padding:.5rem 0; border-bottom:1px dotted var(--grid); font-size:.88rem; align-items:baseline; }
+  .hist-item .h-year{ font-family:var(--mono); color:var(--brass); flex:none; width:3.2em; }
+  .hist-item .h-name{ font-weight:600; flex:none; }
+  .hist-item .h-ach{ color:var(--ink-soft); }
+
+  .usage-note{ margin-top:1.6rem; padding:1rem 1.2rem; border-left:3px solid var(--oxblood); background:var(--paper-2); font-size:.9rem; }
+
+  footer{ max-width:1160px; margin:0 auto; padding:2rem clamp(1.2rem,4vw,3rem) 3rem; font-family:var(--mono); font-size:.76rem; color:var(--ink-soft); }
+  footer a{ color:var(--brass); text-decoration:none; }
+  footer a:hover{ text-decoration:underline; }
+
+  @media (max-width:640px){
+    .coord-strip{ flex-direction:column; }
+    .coord-cell{ border-right:none; border-bottom:1px solid var(--grid-strong); }
+    .chart-index a{ padding:.65rem .8rem; }
+  }
+</style>
+
+<header class="masthead">
+  <div class="masthead-top">
+    <div>
+      <span class="eyebrow">个人图集 · 五年拼图计划 · 起始 2026</span>
+      <h1>数学全景图</h1>
+      <p class="quote">"从普通如我的人，到能读懂王虹、邓煜的证明框架、看出巧在哪的人。"</p>
+    </div>
+  </div>
+  <div class="coord-strip">
+    <div class="coord-cell"><div class="k">第 1 个月</div><div class="v num">100 块</div></div>
+    <div class="coord-cell"><div class="k">第 3 年</div><div class="v num">1,000 块</div></div>
+    <div class="coord-cell"><div class="k">第 5 年</div><div class="v num">5,000 块</div></div>
+    <div class="coord-cell"><div class="k">地标</div><div class="v num">21 位菲尔兹奖得主</div></div>
+    <div class="coord-cell"><div class="k">锚点</div><div class="v num">王虹 · 邓煜 · 2026</div></div>
+  </div>
+  <div class="progress-row">
+    <div class="progress-label"><span>地形图进度</span><span><span id="prog-count" class="num">0</span> / <span id="prog-total" class="num">100</span> 已拼上</span></div>
+    <div class="progress-track"><div class="progress-fill" id="prog-fill"></div></div>
+  </div>
+</header>
+
+<nav class="chart-index">
+  <ol>
+    <li><a href="#calibration"><span class="idx-n">00</span>先校准：什么叫懂</a></li>
+    <li><a href="#map"><span class="idx-n">01</span>地形图 · 100 块</a></li>
+    <li><a href="#year3"><span class="idx-n">02</span>第 3 年 · 1000 块</a></li>
+    <li><a href="#year5"><span class="idx-n">03</span>第 5 年 · 5000 块</a></li>
+    <li><a href="#landmarks"><span class="idx-n">04</span>地标层 · 菲尔兹奖</a></li>
+  </ol>
+</nav>
+
+<main>
+
+  <section id="calibration">
+    <div class="section-head">
+      <h2>先校准一件事：什么叫"懂"</h2>
+      <span class="tag">00 / Calibration</span>
+    </div>
+    <p class="lede">"懂"这个词太模糊，得先拆成四层，不然目标定不住。普通 211 数学硕士，大概率停在第 2 层——除非导师正好做这个方向、带你精读文献，否则够不到第 3 层。这不是贬低，是诚实。</p>
+    <div class="table-wrap">
+      <table class="layer-table">
+        <thead><tr><th>层级</th><th>能做到什么</th><th>需要什么基础</th></tr></thead>
+        <tbody>
+          <tr><td class="lv">1 · 知道结论</td><td>知道"猜想被证明了""方程被严格推导出来了"</td><td>看新闻就行</td></tr>
+          <tr><td class="lv">2 · 懂问题在问什么</td><td>知道 Kakeya 猜想在问什么、希尔伯特第六问题在问什么</td><td>本科实分析/测度论 + 一篇写得好的导读</td></tr>
+          <tr class="target"><td class="lv">3 · 懂证明的招法</td><td>能读懂论文引言和证明框架，知道用了哪几个工具组合，知道为什么以前的方法卡住、新方法巧在哪</td><td>研究生阶段专门学过这个具体方向</td></tr>
+          <tr><td class="lv">4 · 能验证 / 能推</td><td>能逐行核对证明，或拿这套方法解决相邻的开放问题</td><td>就是这个方向的博士生 / 博士后</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="north-star">
+      <strong>北极星是第 3 层</strong>（标题那句话）——不是承诺 5 年后必然到达。第 3 年、第 5 年两个检查点会把它拆成更保守、可验证的阶段性版本：第 3 年目标停在第 2 层，第 5 年目标是第 2 层稳稳站住、第 3 层摸到边。
+    </div>
+  </section>
+
+  <section id="map">
+    <div class="section-head">
+      <h2>第 1 个月：100 块地形图</h2>
+      <span class="tag">01 / Terrain, low resolution</span>
+    </div>
+    <p class="lede">每块 = 一个数学分支/概念，只求"知道它存在、跟谁接壤、一句话说清是什么"。<span class="badge-priority">●</span> 珠色标记 = 优先方向（几何 + 应用）；<span class="tag-known" style="display:inline-block;position:relative;top:-1px;">已知</span> = 经济学/CIMA 范围内，本月只需唤醒记忆。点开每个区域勾选进度，自动保存在这台设备上。</p>
+    <div class="mosaic" id="mosaic"></div>
+  </section>
+
+  <section id="year3">
+    <div class="section-head">
+      <h2>第 3 年：累计 1000 块</h2>
+      <span class="tag">02 / Zoom to mid-resolution</span>
+    </div>
+    <p class="lede">900 块新增名额按权重分配到地形图各区域。优先区域裂变成约 10 块子概念，能推导、能实现；非优先区域轻量扩展，维持"知道在哪、遇到能查"。</p>
+    <div class="table-wrap">
+      <table class="weight-table">
+        <thead><tr><th>区域</th><th>权重</th><th>3 年目标水平</th></tr></thead>
+        <tbody>
+          <tr><td>几何与空间</td><td class="pct num">25%</td><td>能推导、能可视化、能讲给别人听<div class="weight-bar"><i style="width:25%"></i></div></td></tr>
+          <tr><td>应用数学（ML + 零售空间）</td><td class="pct num">25%</td><td>能用代码实现、能用在实际项目里<div class="weight-bar"><i style="width:25%"></i></div></td></tr>
+          <tr><td>优化理论</td><td class="pct num">15%</td><td>能选对方法、能手推核心公式<div class="weight-bar"><i style="width:15%"></i></div></td></tr>
+          <tr><td>分析学</td><td class="pct num">10%</td><td>能读懂论文里的记号，不必自己证明<div class="weight-bar"><i style="width:10%"></i></div></td></tr>
+          <tr><td>概率统计</td><td class="pct num">10%</td><td>能独立做统计分析，不只是调包<div class="weight-bar"><i style="width:10%"></i></div></td></tr>
+          <tr><td>其余（代数/离散/基础/前沿）</td><td class="pct num">15%</td><td>维持地图完整性，遇到能查、能定位<div class="weight-bar"><i style="width:15%"></i></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="zoom-demo">
+      <span class="eyebrow">放大示例 · 凸几何 → 10 块子概念</span>
+      <div class="zoom-flow">
+        <span class="node">凸集与凸包</span><span class="arrow">→</span>
+        <span class="node">支持超平面定理</span><span class="arrow">→</span>
+        <span class="node">凸函数与 Jensen 不等式</span><span class="arrow">→</span>
+        <span class="node">凸优化的几何直觉</span><span class="arrow">→</span>
+        <span class="node">多面体几何</span><span class="arrow">→</span>
+        <span class="node">John 椭球</span><span class="arrow">→</span>
+        <span class="node">Brunn–Minkowski 不等式</span><span class="arrow">→</span>
+        <span class="node">SVM 的几何解释</span><span class="arrow">→</span>
+        <span class="node">高维凸体的反直觉现象</span><span class="arrow">→</span>
+        <span class="node">凸几何与最优传输的接口</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="year5">
+    <div class="section-head">
+      <h2>第 5 年：累计 5000 块</h2>
+      <span class="tag">03 / Zoom to high-resolution</span>
+    </div>
+    <p class="lede">建议选 2 个方向推到高分辨率，不要 3 个都深耕——深度和广度会互相稀释。其余区域补到中分辨率，保证地图上没有大片空白。</p>
+    <div class="tracks">
+      <div class="track"><span class="t-n">01</span><h3>几何 + 空间分析</h3><p>直接服务 AI-Space-Geometry 项目和品类规划工作。从计算几何、凸几何一路打到"能看懂几何测度论的问题是在问什么"，最贴近王虹这条线，也最贴近日常工作。</p></div>
+      <div class="track"><span class="t-n">02</span><h3>应用数学 + ML 数学</h3><p>从线性代数应用打到信息几何、最优传输，服务 AI 判断框架内容线（思想的引力系列）。</p></div>
+      <div class="track"><span class="t-n">03</span><h3>优化与运筹</h3><p>如果咨询业务往供应链/选址方向发展，这条线的 ROI 最直接。</p></div>
+    </div>
+    <div class="north-star">
+      现实的检查点是<strong>第 2 层稳稳站住、第 3 层摸到边</strong>——读到 Kakeya 猜想的论文引言时，不仅懂"这个问题在问什么"，还能看出"新方法巧在哪个招法上"，但不要求自己能逐行验证证明。这已经是极少数业余自学者能到达的位置。
+    </div>
+  </section>
+
+  <section id="landmarks">
+    <div class="section-head">
+      <h2>地标层：菲尔兹奖得主钉在地图上</h2>
+      <span class="tag">04 / Landmarks, real coordinates on the edge</span>
+    </div>
+    <p class="lede">这一层是"边"——不是要学的内容本身，是证明这条路走得通、走到底长什么样的真实坐标。2026 年 7 月 23 日，费城 ICM 公布本届菲尔兹奖，王虹与邓煜同届获奖，是这份地图最实的两个锚点。</p>
+
+    <div class="eyebrow" style="margin-bottom:.6rem;">2026 届 · 最近的边</div>
+    <div class="landmark-2026" id="landmarks-2026"></div>
+
+    <div class="eyebrow" style="margin-bottom:.6rem;">历届精选 · 远景的边（21 位中的 17 位，与优先方向强相关，非全部 64 人）</div>
+    <div id="landmarks-historic"></div>
+
+    <div class="usage-note">
+      <strong>用法</strong>：每季度深耕一个重点区域时，从对应方向里挑一位地标，把他/她那篇获奖工作的科普解读当成"这个季度往外拼的靶子"——不是要看懂论文，是要看懂"这个问题在问什么、这个方向的人在乎什么"。
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  数学全景图 · 个人学习地图，非公开出版物 ·
+  数据来源：<a href="https://www.sohu.com/a/1053988096_121124372" target="_blank" rel="noopener">中国数学的新篇章：王虹、邓煜同获2026年菲尔兹奖</a> ·
+  <a href="https://finance.sina.com.cn/tech/discovery/2026-07-23/doc-iniivihw4515429.shtml" target="_blank" rel="noopener">官方公布：邓煜、王虹等4人获2026年菲尔兹奖</a> ·
+  进度数据仅保存在本设备浏览器（localStorage），不会上传。
+</footer>
+
+<script>
+(function(){
+  var categories = [
+    { id:'I', name:'数与代数基础', region:'', blankNote:'Jacob Tsimerman（算术几何/模型论）钉在这一区，但地图上目前没有对应的格子 —— 地图空白', pieces:[
+      {n:'集合论基础'},
+      {n:'数系与数域'},
+      {n:'初等代数', tags:['known','priority']},
+      {n:'线性代数：向量与矩阵', tags:['known','priority']},
+      {n:'线性代数：特征值与特征向量', tags:['known-p','priority']},
+      {n:'抽象代数入门：群'},
+      {n:'抽象代数入门：环与域'},
+      {n:'数论基础'},
+      {n:'多项式与代数方程'},
+    ]},
+    { id:'II', name:'几何与空间', region:'重点方向', blankNote:'John Pardon（辛几何）钉在这一区，但地图上目前没有对应的格子 —— 地图空白', pieces:[
+      {n:'欧几里得几何公理体系', tags:['priority']},
+      {n:'解析几何', tags:['priority']},
+      {n:'三角学', tags:['priority']},
+      {n:'向量几何', tags:['priority']},
+      {n:'仿射几何'},
+      {n:'射影几何'},
+      {n:'非欧几何（双曲/椭圆）'},
+      {n:'微分几何：曲线与曲率', tags:['priority']},
+      {n:'微分几何：曲面与流形初步'},
+      {n:'拓扑学入门：点集拓扑'},
+      {n:'拓扑学：同伦与同调直觉'},
+      {n:'凸几何', tags:['priority'], zoom:true},
+      {n:'计算几何', tags:['priority']},
+      {n:'几何测度论直觉', tags:['landmark'], note:'王虹方向'},
+      {n:'分形几何', tags:['priority']},
+    ]},
+    { id:'III', name:'分析学', region:'王虹 + 邓煜方向重点', pieces:[
+      {n:'极限与连续性', tags:['known','priority']},
+      {n:'微分学', tags:['known','priority']},
+      {n:'积分学', tags:['known','priority']},
+      {n:'级数与收敛'},
+      {n:'多元微积分', tags:['known-p','priority']},
+      {n:'常微分方程'},
+      {n:'偏微分方程入门', tags:['priority'], note:'邓煜方向'},
+      {n:'实分析：测度与积分'},
+      {n:'复分析基础'},
+      {n:'傅里叶分析', tags:['priority'], note:'王虹方向'},
+      {n:'调和分析入门', tags:['priority'], note:'王虹方向'},
+      {n:'泛函分析入门'},
+      {n:'统计力学与动理论基础：玻尔兹曼方程', tags:['priority','landmark'], note:'邓煜方向'},
+      {n:'标度极限与涌现：Boltzmann-Grad 极限', tags:['priority','landmark'], note:'邓煜方向'},
+    ]},
+    { id:'IV', name:'概率与统计', region:'', pieces:[
+      {n:'概率论基础', tags:['known']},
+      {n:'随机变量与分布', tags:['known']},
+      {n:'统计推断', tags:['known']},
+      {n:'贝叶斯统计'},{n:'随机过程'},{n:'马尔可夫链'},{n:'信息论基础'},{n:'时间序列分析'},{n:'多元统计分析'},{n:'统计学习理论'},
+    ]},
+    { id:'V', name:'离散数学与组合', region:'', pieces:[
+      {n:'图论'},{n:'组合数学'},{n:'数理逻辑'},{n:'算法复杂度理论'},{n:'博弈论'},{n:'组合优化'},{n:'编码理论'},
+    ]},
+    { id:'VI', name:'优化理论', region:'重点方向', pieces:[
+      {n:'线性规划', tags:['known-p','priority']},
+      {n:'凸优化', tags:['priority']},
+      {n:'非线性优化'},{n:'整数规划'},
+      {n:'动态规划', tags:['priority']},
+      {n:'运筹学'},
+      {n:'梯度下降与迭代方法', tags:['priority']},
+      {n:'拉格朗日乘数法与对偶理论'},
+    ]},
+    { id:'VII', name:'应用数学：机器学习与 AI 数学', region:'重点方向', pieces:[
+      {n:'线性代数在 ML 中的应用（SVD/PCA）', tags:['priority']},
+      {n:'矩阵微积分'},{n:'概率图模型'},{n:'优化在深度学习中的应用'},{n:'信息几何'},{n:'核方法与再生核希尔伯特空间'},
+      {n:'高维几何与维度诅咒', tags:['priority']},
+      {n:'神经网络的数学基础'},{n:'强化学习中的数学（MDP）'},{n:'图神经网络的数学基础'},
+      {n:'度量学习与嵌入空间几何', tags:['priority']},
+      {n:'最优传输理论'},
+    ]},
+    { id:'VIII', name:'应用数学：零售与空间分析', region:'重点方向，呼应 AI-Space-Geometry', pieces:[
+      {n:'空间统计学', tags:['priority']},
+      {n:'选址理论与区位几何', tags:['priority']},
+      {n:'网络分析与供应链几何'},
+      {n:'排队论', tags:['priority']},
+      {n:'库存优化数学模型', tags:['priority']},
+      {n:'计量经济学中的几何直觉', tags:['known-p','priority']},
+      {n:'数据可视化的几何原理', tags:['priority']},
+      {n:'空间数据结构（KD-tree/R-tree）'},
+    ]},
+    { id:'IX', name:'数学基础与哲学', region:'', pieces:[
+      {n:'数理逻辑与公理化方法'},{n:'哥德尔不完备定理直觉'},{n:'数学史脉络'},{n:'数学美学与直觉训练'},{n:'证明技巧：归纳法/反证法/构造法'},
+    ]},
+    { id:'X', name:'前沿与交叉领域', region:'王虹 + 邓煜方向重点', pieces:[
+      {n:'Kakeya 猜想与其历史', tags:['landmark'], note:'王虹方向'},
+      {n:'几何测度论进阶'},{n:'调和分析进阶：振荡积分'},{n:'加性组合数学'},{n:'数论中的几何方法'},{n:'随机矩阵理论'},
+      {n:'张量与多重线性代数'},{n:'微分方程的几何视角（动力系统）'},{n:'混沌理论与分岔'},{n:'范畴论初步'},
+      {n:'几何深度学习（Geometric Deep Learning）', tags:['priority']},
+      {n:'希尔伯特第六问题：从牛顿力学到流体方程', tags:['priority','landmark'], note:'邓煜方向'},
+    ]},
+  ];
+
+  var landmarks2026 = [
+    { name:'王虹', field:'调和分析 / 几何测度论', region:'II · III · X', ach:'三维 Kakeya 猜想、傅里叶限制性、Falconer 距离集问题', hi:true },
+    { name:'邓煜', field:'偏微分方程 / 动理论', region:'III · X', ach:'从硬球粒子动力学严格推导玻尔兹曼方程（希尔伯特第六问题）', hi:true },
+    { name:'John Pardon', field:'辛几何', region:'II（空白区）', ach:'虚拟基本圈新处理方法、深谷范畴', blank:true },
+    { name:'Jacob Tsimerman', field:'算术几何 / 模型论', region:'I（空白区）', ach:'把 o-极小性重塑为算术与复代数几何的基本方法', blank:true },
+  ];
+
+  var landmarksHistoric = [
+    { g:'几何方向', items:[
+      {y:1982,n:'丘成桐 Shing-Tung Yau',a:'几何分析 / 卡拉比猜想'},
+      {y:1986,n:'Simon Donaldson',a:'规范场论 / 四维流形'},
+      {y:2006,n:'Grigori Perelman',a:'庞加莱猜想 / Ricci 流'},
+      {y:2014,n:'Maryam Mirzakhani',a:'双曲几何 / 模空间动力系统'},
+      {y:2022,n:'Maryna Viazovska',a:'离散几何 / 球堆积'},
+    ]},
+    { g:'调和分析 —— 王虹的直系学术脉络', items:[
+      {y:1978,n:'Charles Fefferman',a:'傅里叶限制性问题奠基'},
+      {y:1994,n:'Jean Bourgain',a:'调和分析 / PDE / 组合数学'},
+      {y:2006,n:'陶哲轩 Terence Tao',a:'调和分析 / 加性数论 / 组合数学'},
+    ]},
+    { g:'PDE / 最优传输 —— 邓煜的直系学术脉络', items:[
+      {y:1994,n:'Pierre-Louis Lions',a:'粘性解理论'},
+      {y:2010,n:'Cédric Villani',a:'最优传输 / 玻尔兹曼方程正则性'},
+      {y:2018,n:'Alessio Figalli',a:'最优传输 / PDE'},
+    ]},
+    { g:'概率与统计力学 —— 涌现主题最直接的历史锚点', items:[
+      {y:2006,n:'Wendelin Werner',a:'SLE 随机过程'},
+      {y:2010,n:'Stanislav Smirnov',a:'渗流 / 共形不变性'},
+      {y:2010,n:'Elon Lindenstrauss',a:'遍历理论 / 动力系统'},
+      {y:2014,n:'Martin Hairer',a:'随机偏微分方程 / 正则结构'},
+      {y:2022,n:'Hugo Duminil-Copin',a:'统计力学 / Ising 模型 / 渗流'},
+    ]},
+    { g:'组合与交叉', items:[
+      {y:2022,n:'June Huh',a:'组合数学 / 代数几何交叉'},
+    ]},
+  ];
+
+  var zoomChain = ['凸集与凸包','支持超平面定理','凸函数与 Jensen 不等式','凸优化的几何直觉','多面体几何','John 椭球','Brunn–Minkowski 不等式','SVM 的几何解释','高维凸体的反直觉现象','凸几何与最优传输的接口'];
+
+  var STORE_KEY = 'mathPanoramaProgress';
+  var state = {};
+  try { state = JSON.parse(localStorage.getItem(STORE_KEY) || '{}'); } catch(e){ state = {}; }
+
+  function tagBadges(tags, note){
+    var out = '';
+    if(tags && tags.indexOf('priority') > -1) out += '<span class="badge-priority" title="优先方向">●</span> ';
+    if(tags && tags.indexOf('landmark') > -1) out += '<span class="badge-landmark" title="有地标钉在这">★</span> ';
+    return out;
+  }
+
+  function pieceKnownLabel(tags){
+    if(!tags) return '';
+    if(tags.indexOf('known') > -1) return '<span class="tag-known">已知</span>';
+    if(tags.indexOf('known-p') > -1) return '<span class="tag-known">部分已知</span>';
+    return '';
+  }
+
+  var mosaic = document.getElementById('mosaic');
+  var totalPieces = 0;
+
+  categories.forEach(function(cat){
+    totalPieces += cat.pieces.length;
+    var details = document.createElement('details');
+    details.className = 'parcel';
+    details.style.flexGrow = cat.pieces.length;
+
+    var summary = document.createElement('summary');
+    summary.innerHTML =
+      '<span class="p-id">区 ' + cat.id + (cat.region ? ' · ' + cat.region : '') + '</span>' +
+      '<span class="p-name">' + cat.name + '</span>' +
+      '<span class="p-meta"><span>' + cat.pieces.length + ' 块 · <span class="done-count num">0</span> 已拼上</span></span>';
+    details.appendChild(summary);
+
+    if(cat.blankNote){
+      var bn = document.createElement('div');
+      bn.className = 'p-blank';
+      bn.textContent = '⌖ ' + cat.blankNote;
+      details.appendChild(bn);
+    }
+
+    var list = document.createElement('div');
+    list.className = 'piece-list';
+
+    cat.pieces.forEach(function(p, idx){
+      var id = 'piece-' + cat.id + '-' + idx;
+      var row = document.createElement('div');
+      row.className = 'piece';
+      var checked = !!state[id];
+      if(checked) row.classList.add('done');
+
+      row.innerHTML =
+        '<input type="checkbox" id="' + id + '"' + (checked ? ' checked' : '') + ' />' +
+        '<label for="' + id + '">' + tagBadges(p.tags) + p.n + pieceKnownLabel(p.tags) +
+        (p.note ? '<span class="tag-note">' + p.note + '</span>' : '') +
+        (p.zoom ? '<button type="button" class="zoom-btn" data-zoom="' + id + '">▸ 放大示例</button>' : '') +
+        '</label>';
+
+      list.appendChild(row);
+
+      if(p.zoom){
+        var chain = document.createElement('div');
+        chain.className = 'zoom-chain';
+        chain.id = 'zoom-' + id;
+        chain.textContent = zoomChain.join(' → ');
+        list.appendChild(chain);
+      }
+    });
+
+    details.appendChild(list);
+    mosaic.appendChild(details);
+  });
+
+  document.getElementById('prog-total').textContent = totalPieces;
+
+  function updateCounts(){
+    var total = 0;
+    document.querySelectorAll('.parcel').forEach(function(parcel){
+      var boxes = parcel.querySelectorAll('input[type=checkbox]');
+      var done = 0;
+      boxes.forEach(function(b){ if(b.checked) done++; });
+      total += done;
+      var dc = parcel.querySelector('.done-count');
+      if(dc) dc.textContent = done;
+    });
+    document.getElementById('prog-count').textContent = total;
+    var pct = totalPieces ? (total / totalPieces * 100) : 0;
+    document.getElementById('prog-fill').style.width = pct + '%';
+  }
+
+  mosaic.addEventListener('change', function(e){
+    if(e.target.matches('input[type=checkbox]')){
+      state[e.target.id] = e.target.checked;
+      e.target.closest('.piece').classList.toggle('done', e.target.checked);
+      try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch(err){}
+      updateCounts();
+    }
+  });
+
+  mosaic.addEventListener('click', function(e){
+    var btn = e.target.closest('.zoom-btn');
+    if(btn){
+      var chain = document.getElementById('zoom-' + btn.dataset.zoom);
+      if(chain){
+        chain.classList.toggle('show');
+        btn.textContent = chain.classList.contains('show') ? '▾ 收起' : '▸ 放大示例';
+      }
+    }
+  });
+
+  updateCounts();
+
+  // ---- landmarks 2026 ----
+  var l2026 = document.getElementById('landmarks-2026');
+  landmarks2026.forEach(function(l){
+    var card = document.createElement('div');
+    card.className = 'lcard' + (l.blank ? ' blank' : '');
+    card.innerHTML =
+      '<div class="l-year">2026 · 菲尔兹奖</div>' +
+      '<h3>' + l.name + '</h3>' +
+      '<div class="l-field">' + l.field + '</div>' +
+      '<div class="l-ach">' + l.ach + '</div>' +
+      '<div class="l-region">钉在 → ' + l.region + '</div>' +
+      (l.blank ? '<div class="l-flag">⌖ 地图空白，尚未开辟对应区域</div>' : '');
+    l2026.appendChild(card);
+  });
+
+  // ---- landmarks historic ----
+  var lh = document.getElementById('landmarks-historic');
+  landmarksHistoric.forEach(function(group){
+    var g = document.createElement('div');
+    g.className = 'hist-group';
+    var h4 = document.createElement('h4');
+    h4.textContent = group.g;
+    g.appendChild(h4);
+    var list = document.createElement('div');
+    list.className = 'hist-list';
+    group.items.forEach(function(it){
+      var row = document.createElement('div');
+      row.className = 'hist-item';
+      row.innerHTML = '<span class="h-year num">' + it.y + '</span><span class="h-name">' + it.n + '</span><span class="h-ach">' + it.a + '</span>';
+      list.appendChild(row);
+    });
+    g.appendChild(list);
+    lh.appendChild(g);
+  });
+})();
+</script>
