@@ -204,6 +204,35 @@
   .quest-tag{ font-family:var(--mono); font-size:.68rem; color:var(--ink-soft); border:1px dashed var(--grid-strong); padding:0 .35em; border-radius:2px; margin-left:.3em; white-space:nowrap; }
   .quest-tag.boss{ color:var(--oxblood); border:1px solid var(--oxblood); }
   .quest-empty{ font-size:.8rem; color:var(--ink-soft); }
+  .quest-item.fight{ cursor:default; justify-content:space-between; align-items:center; gap:.8rem; }
+  .quest-fight{ font-family:var(--mono); font-size:.74rem; color:var(--paper); background:var(--brass); border:1px solid var(--brass); padding:.2rem .8rem; border-radius:2px; cursor:pointer; flex:none; }
+  .quest-fight:focus-visible, .panel-btn:focus-visible{ outline:2px solid var(--brass); outline-offset:2px; }
+  .quest-panel{ border-top:1px solid var(--grid-strong); background:var(--paper-2); padding:1rem .9rem 1.1rem; }
+  .quest-panel[hidden]{ display:none; }
+  .panel-h{ font-family:var(--serif); font-size:1.05rem; margin-bottom:.2rem; }
+  .panel-sub{ font-size:.76rem; color:var(--ink-soft); margin-bottom:.9rem; line-height:1.6; }
+  .panel-q{ margin-bottom:1rem; }
+  .panel-qt{ font-size:.9rem; line-height:1.75; margin-bottom:.4rem; }
+  .panel-q textarea{ width:100%; min-height:7rem; font:inherit; font-size:.88rem; line-height:1.7; color:var(--ink); background:var(--paper); border:1px solid var(--grid-strong); padding:.6rem .7rem; border-radius:2px; resize:vertical; box-sizing:border-box; }
+  .panel-q textarea:focus-visible{ outline:2px solid var(--brass); outline-offset:1px; }
+  .panel-count{ font-family:var(--mono); font-size:.68rem; color:var(--ink-soft); text-align:right; margin-top:.2rem; }
+  .panel-code{ display:flex; flex-wrap:wrap; align-items:center; gap:.5rem .8rem; margin-bottom:.9rem; }
+  .panel-code label{ font-family:var(--mono); font-size:.74rem; color:var(--ink-soft); }
+  .panel-code input{ font:inherit; font-size:.88rem; color:var(--ink); background:var(--paper); border:1px solid var(--grid-strong); padding:.3rem .55rem; border-radius:2px; min-width:11rem; }
+  .panel-code input:focus-visible{ outline:2px solid var(--brass); outline-offset:1px; }
+  .panel-actions{ display:flex; flex-wrap:wrap; align-items:center; gap:.6rem; }
+  .panel-btn{ font:inherit; font-size:.86rem; padding:.35rem 1rem; border-radius:2px; cursor:pointer; border:1px solid var(--brass); color:var(--paper); background:var(--brass); }
+  .panel-btn.ghost{ background:none; color:var(--brass); }
+  .panel-btn[disabled]{ opacity:.5; cursor:wait; }
+  .panel-status{ font-size:.8rem; color:var(--ink-soft); }
+  .panel-status.err{ color:var(--oxblood); }
+  .res-banner{ margin-top:1rem; padding:.55rem .8rem; font-weight:600; border:1px solid var(--oxblood); color:var(--oxblood); }
+  .res-banner.pass{ border-color:var(--teal); color:var(--teal); }
+  .res-q{ margin-top:.7rem; padding-top:.6rem; border-top:1px dotted var(--grid-strong); font-size:.86rem; line-height:1.7; }
+  .res-chip{ font-family:var(--mono); font-size:.72rem; padding:0 .45em; border-radius:2px; border:1px solid var(--oxblood); color:var(--oxblood); margin-right:.5em; }
+  .res-chip.pass{ border-color:var(--teal); color:var(--teal); }
+  .res-chip.almost{ border-color:var(--brass); color:var(--brass); }
+  .res-hints{ margin:.3rem 0 0 1.1rem; padding:0; color:var(--ink-soft); font-size:.82rem; }
   .gap-tag{ font-family:var(--mono); font-size:.68rem; color:var(--oxblood); border:1px solid var(--oxblood-soft); padding:0 .35em; border-radius:2px; margin-left:.4em; white-space:nowrap; }
   .gap-row{ display:flex; flex-wrap:wrap; align-items:center; gap:.5rem; margin-bottom:.6rem; font-size:.8rem; color:var(--ink-soft); }
   .gap-pill{ font-family:var(--mono); font-size:.72rem; padding:.05rem .5rem; border-radius:2px; border:1px solid var(--oxblood); color:var(--oxblood); }
@@ -340,6 +369,7 @@
         <span class="level-sum" id="quest-sum"></span>
       </div>
       <div id="quest-out" class="quest-out"></div>
+      <div id="quest-panel" class="quest-panel" hidden></div>
     </div>
     <div class="mosaic" id="mosaic"></div>
   </section>
@@ -458,11 +488,11 @@
       {n:'极限与连续性', tags:['known','priority'], concepts:['ε-δ 定义','连续性与介值定理'], srcs:[{t:'复习本科微积分笔记',k:'复习'}]},
       {n:'微分学', tags:['known','priority'], concepts:['导数的几何意义','链式法则','泰勒展开'], srcs:[{t:'复习本科微积分笔记',k:'复习'}]},
       {n:'积分学', tags:['known','priority'], concepts:['黎曼积分','微积分基本定理'], srcs:[{t:'复习本科微积分笔记',k:'复习'}]},
-      {n:'级数与收敛'},
+      {n:'级数与收敛', concepts:['部分和与收敛的定义','比较 / 比值判别法','绝对收敛与条件收敛','幂级数与一致收敛初步'], srcs:[{t:'Tao，<em>Analysis I</em> 第 6-7 章（数列与级数）；或 Rudin，<em>Principles of Mathematical Analysis</em> 第 3 章',k:'教材'}]},
       {n:'多元微积分', tags:['known-p','priority'], concepts:['偏导数与梯度','多重积分','拉格朗日乘数法的几何直觉'], srcs:[{t:'Strang，<em>Calculus</em>（MIT 公开课配套）',k:'教材·免费'}]},
       {n:'常微分方程'},
       {n:'偏微分方程入门', tags:['priority'], note:'邓煜方向', concepts:['一阶/二阶 PDE 分类','边界条件与初值问题','波动方程与热方程'], srcs:[{t:'Strauss，<em>Partial Differential Equations: An Introduction</em>',k:'教材'}]},
-      {n:'实分析：测度与积分'},
+      {n:'实分析：测度与积分', concepts:['零测集与测度的直觉','可测函数','勒贝格积分与黎曼积分的区别','控制收敛定理'], srcs:[{t:'Stein & Shakarchi，<em>Real Analysis</em>（Princeton Lectures in Analysis III）',k:'教材·王虹这条线的标准路径'},{t:'Tao，<em>An Introduction to Measure Theory</em>',k:'教材'}]},
       {n:'复分析基础'},
       {n:'傅里叶分析', tags:['priority'], note:'王虹方向', concepts:['傅里叶级数','傅里叶变换','频域与时域的对偶'], srcs:[{t:'Stein & Shakarchi，<em>Fourier Analysis: An Introduction</em>',k:'教材·普林斯顿分析系列，王虹这条线的标准起点'}]},
       {n:'调和分析入门', tags:['priority'], note:'王虹方向', concepts:['Calderón–Zygmund 理论直觉','极大函数','振荡积分初步'], srcs:[{t:'Stein & Shakarchi 系列后续卷',k:'教材'}]},
@@ -572,6 +602,8 @@
     '计算几何': {lv:4, plain:'让电脑回答"这些点围成什么形状、哪个点离谁最近"，并且回答得快。', bridge:['坐标系','简单算法']},
     '几何测度论直觉': {lv:5, plain:'怎么给一个怪异图形量"大小"：不只是面积，还有它到底薄到什么程度。', bridge:['面积与长度','极限','实分析：测度与积分']},
     '分形几何': {lv:3, plain:'放大一个图形，局部和整体长得一样，一直放大都一样；它的"维数"可以不是整数。', bridge:['相似图形','指数与对数']},
+    '级数与收敛': {lv:4, plain:'把无穷多个数一个一个往后加，看总和会不会稳定在某个值上。', bridge:['数列','极限与连续性']},
+    '实分析：测度与积分': {lv:5, plain:'先学会给一堆散乱的点量"大小"，再据此重新定义"求面积"这件事。', bridge:['极限与连续性','级数与收敛','积分学']},
     '极限与连续性': {lv:4, plain:'数越来越靠近某个值，我们就说它的极限是这个值；连续就是画线时笔不用离开纸。', bridge:['函数','数列']},
     '微分学': {lv:4, plain:'一条曲线在某一点上"此刻有多陡"。', bridge:['函数与图像','极限']},
     '积分学': {lv:4, plain:'把一块弯弯曲曲的面积，切成无数条细长条再加起来。', bridge:['面积','极限','微分学']},
@@ -846,7 +878,7 @@
       html = '<div class="quest-empty">按你现在的台阶和已勾选的块，这个目标的前置全部具备。</div>';
     } else {
       if(plan.have.length){
-        html += '<div class="quest-have"><b>你已具备</b>' + plan.have.join(' · ') + '</div>';
+        html += '<div class="quest-have"><b>你已具备</b>' + plan.have.map(function(k){ return state['passed-' + k] ? k + '（已过批改）' : k; }).join(' · ') + '</div>';
       }
       Object.keys(plan.stages).map(Number).sort(function(a,b){return a-b;}).forEach(function(s){
         var items = plan.stages[s];
@@ -861,7 +893,12 @@
             var d = n.data.lv - curLevel;
             if(d > 0) tags += '<span class="gap-tag">差 ' + d + ' 级</span>';
           }
-          html += '<label class="quest-item' + (n.kind === 'base' ? ' base' : '') + '"><input type="checkbox" data-qid="' + n.id + '" data-qname="' + n.key + '" /><span>' + n.key + tags + '</span></label>';
+          var cid = (gameOn && n.kind === 'piece') ? challengeMap[n.key] : null;
+          if(cid){
+            html += '<div class="quest-item fight"><span>' + n.key + tags + '</span><button type="button" class="quest-fight" data-cid="' + cid + '" data-key="' + n.key + '">挑战</button></div>';
+          } else {
+            html += '<label class="quest-item' + (n.kind === 'base' ? ' base' : '') + '"><input type="checkbox" data-qid="' + n.id + '" data-qname="' + n.key + '" /><span>' + n.key + tags + '</span></label>';
+          }
         });
         html += '</div></div>';
       });
@@ -894,6 +931,125 @@
     updateCounts();
     renderQuest();
   });
+
+  // ---- 挑战：通关靠 AI 批改，评分表只在服务端 ----
+  // 批改服务连得上才显示"挑战"按钮；连不上（比如 GitHub Pages 上没有后端）就保持自己勾选。
+  var GRADER_API = '';   // 同源部署留空；前后端分开部署时填后端地址
+  var CODE_KEY = 'mathQuestCode';
+  var gameOn = false, challengeMap = {}, drafts = {}, curCid = null, curKey = null;
+  var panel = document.getElementById('quest-panel');
+
+  function esc(s){
+    return String(s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; });
+  }
+  function api(path, opts){
+    return fetch(GRADER_API + path, opts).then(function(r){
+      return r.json().then(function(j){
+        if(!r.ok) throw new Error(j.error || ('出错了（' + r.status + '）'));
+        return j;
+      });
+    });
+  }
+  function getCode(){ try { return localStorage.getItem(CODE_KEY) || ''; } catch(e){ return ''; } }
+
+  function openChallenge(cid, key){
+    curCid = cid; curKey = key;
+    panel.hidden = false;
+    panel.innerHTML = '<div class="panel-sub">加载题目…</div>';
+    api('/api/challenge/' + cid).then(function(ch){
+      var d = drafts[cid] || (drafts[cid] = {});
+      var qs = ch.questions.map(function(q, i){
+        return '<div class="panel-q"><div class="panel-qt">' + (i + 1) + '. ' + esc(q.text) + '</div>' +
+          '<textarea data-qid="' + q.id + '" maxlength="1500" placeholder="用自己的话写，不要照抄资料原文。至少 15 字。">' + esc(d[q.id] || '') + '</textarea>' +
+          '<div class="panel-count"><span data-count="' + q.id + '">0</span> / 1500</div></div>';
+      }).join('');
+      panel.innerHTML =
+        '<div class="panel-h">' + esc(ch.title) + '</div>' +
+        '<div class="panel-sub">合上资料再写。批改按"这一关的要点"给结论：过 / 差一点 / 没过，没过会告诉你缺什么方向，不给标准答案。AI 批改是学习反馈，会有判断不准的时候。</div>' +
+        qs +
+        '<div class="panel-code"><label for="quest-code">访问码</label><input id="quest-code" type="text" autocomplete="off" spellcheck="false" value="' + esc(getCode()) + '" /></div>' +
+        '<div class="panel-actions"><button type="button" class="panel-btn" id="quest-submit">提交批改</button>' +
+        '<button type="button" class="panel-btn ghost" id="quest-close">关闭</button><span class="panel-status" id="quest-status"></span></div>' +
+        '<div id="quest-result"></div>';
+      panel.querySelectorAll('textarea').forEach(function(t){
+        panel.querySelector('[data-count="' + t.dataset.qid + '"]').textContent = t.value.length;
+      });
+      panel.scrollIntoView({block:'nearest', behavior:'smooth'});
+    }).catch(function(e){
+      panel.innerHTML = '<div class="panel-sub">题目没加载出来：' + esc(e.message) + '</div>';
+    });
+  }
+
+  function renderResult(res){
+    var names = {pass:'过', almost:'差一点', fail:'没过'};
+    var html = '<div class="res-banner' + (res.passed ? ' pass' : '') + '">' + (res.passed ? '通关：' + esc(curKey) : '这一关还没过，改一改再提交') + '</div>';
+    res.results.forEach(function(r, i){
+      html += '<div class="res-q"><span class="res-chip ' + r.verdict + '">' + names[r.verdict] + '</span>第 ' + (i + 1) + ' 题　' + esc(r.feedback) +
+        (r.hints.length ? '<ul class="res-hints">' + r.hints.map(function(h){ return '<li>' + esc(h) + '</li>'; }).join('') + '</ul>' : '') + '</div>';
+    });
+    document.getElementById('quest-result').innerHTML = html;
+  }
+
+  function submitChallenge(){
+    var status = document.getElementById('quest-status'), btn = document.getElementById('quest-submit');
+    var answers = {}, short = false;
+    panel.querySelectorAll('textarea').forEach(function(t){
+      answers[t.dataset.qid] = t.value.trim();
+      if(t.value.trim().length < 15) short = true;
+    });
+    var code = document.getElementById('quest-code').value.trim();
+    status.className = 'panel-status';
+    if(short){ status.textContent = '每题至少写 15 个字。'; status.className = 'panel-status err'; return; }
+    if(!code){ status.textContent = '请填访问码。'; status.className = 'panel-status err'; return; }
+    try { localStorage.setItem(CODE_KEY, code); } catch(e){}
+    btn.disabled = true; status.textContent = '批改中，通常要十几秒…';
+    api('/api/grade', {method:'POST', headers:{'Content-Type':'application/json','X-Access-Code':code}, body:JSON.stringify({challenge:curCid, answers:answers})})
+      .then(function(res){
+        status.textContent = '';
+        renderResult(res);
+        if(res.passed){
+          var pi = pieceIndex[curKey];
+          state['passed-' + curKey] = true;
+          if(pi){
+            state[pi.id] = true;
+            var main = document.getElementById(pi.id);
+            if(main){ main.checked = true; main.closest('.piece').classList.add('done'); }
+          }
+          try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch(e){}
+          updateCounts();
+          renderQuest();
+        }
+      })
+      .catch(function(e){ status.textContent = e.message; status.className = 'panel-status err'; })
+      .then(function(){ btn.disabled = false; });
+  }
+
+  document.getElementById('quest-out').addEventListener('click', function(e){
+    var b = e.target.closest('.quest-fight');
+    if(b) openChallenge(b.dataset.cid, b.dataset.key);
+  });
+  panel.addEventListener('input', function(e){
+    if(!e.target.matches('textarea')) return;
+    (drafts[curCid] = drafts[curCid] || {})[e.target.dataset.qid] = e.target.value;
+    var c = panel.querySelector('[data-count="' + e.target.dataset.qid + '"]');
+    if(c) c.textContent = e.target.value.length;
+  });
+  panel.addEventListener('click', function(e){
+    if(e.target.id === 'quest-submit') submitChallenge();
+    if(e.target.id === 'quest-close'){ panel.hidden = true; panel.innerHTML = ''; }
+  });
+
+  if(location.protocol !== 'file:'){
+    fetch(GRADER_API + '/healthz').then(function(r){ return r.ok ? r.json() : Promise.reject(); })
+      .then(function(j){ return j.ok ? api('/api/challenges') : null; })
+      .then(function(list){
+        if(!list) return;
+        list.forEach(function(c){ challengeMap[c.piece] = c.id; });
+        gameOn = true;
+        renderQuest();
+      })
+      .catch(function(){});
+  }
 
   // ---- landmarks 2026 ----
   var l2026 = document.getElementById('landmarks-2026');
