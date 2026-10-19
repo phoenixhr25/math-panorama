@@ -180,6 +180,20 @@
   }
   .zoom-label{ font-family:var(--mono); font-size:.68rem; color:var(--oxblood); margin-top:.6rem; text-transform:uppercase; letter-spacing:.03em; }
   .zoom-chain{ font-size:.82rem; color:var(--ink-soft); margin-top:.25rem; line-height:1.9; }
+  .level-bar{ display:flex; flex-wrap:wrap; align-items:center; gap:.5rem 1rem; margin:1rem 0 1.2rem; padding:.7rem .9rem; border:1px solid var(--grid-strong); background:var(--paper-2); }
+  .level-bar label{ font-family:var(--mono); font-size:.74rem; color:var(--ink-soft); }
+  .level-bar select{ font:inherit; font-size:.88rem; color:var(--ink); background:var(--paper); border:1px solid var(--grid-strong); padding:.25rem .5rem; border-radius:2px; }
+  .level-bar select:focus-visible{ outline:2px solid var(--brass); outline-offset:2px; }
+  .level-sum{ font-family:var(--mono); font-size:.74rem; color:var(--ink-soft); }
+  .level-note{ flex-basis:100%; font-size:.76rem; color:var(--ink-soft); line-height:1.6; }
+  .gap-tag{ font-family:var(--mono); font-size:.68rem; color:var(--oxblood); border:1px solid var(--oxblood-soft); padding:0 .35em; border-radius:2px; margin-left:.4em; white-space:nowrap; }
+  .gap-row{ display:flex; flex-wrap:wrap; align-items:center; gap:.5rem; margin-bottom:.6rem; font-size:.8rem; color:var(--ink-soft); }
+  .gap-pill{ font-family:var(--mono); font-size:.72rem; padding:.05rem .5rem; border-radius:2px; border:1px solid var(--oxblood); color:var(--oxblood); }
+  .gap-pill.ok{ border-color:var(--teal); color:var(--teal); }
+  .plain-label, .bridge-label{ font-family:var(--mono); font-size:.68rem; color:var(--brass); margin-top:.6rem; letter-spacing:.03em; }
+  .plain-text{ font-size:.86rem; color:var(--ink); line-height:1.7; margin-top:.15rem; }
+  .bridge-row{ display:flex; flex-wrap:wrap; gap:.35rem; margin-top:.25rem; }
+  .bridge-chip{ font-size:.74rem; color:var(--ink-soft); border:1px dashed var(--grid-strong); padding:.1rem .5rem; border-radius:2px; }
 
   /* ---------- weight table (year3) ---------- */
   .weight-table{ width:100%; border-collapse:collapse; }
@@ -295,6 +309,12 @@
       <span class="tag">01 / Terrain, low resolution</span>
     </div>
     <p class="lede">每块 = 一个数学分支/概念，只求"知道它存在、跟谁接壤、一句话说清是什么"。<span class="badge-priority">●</span> 珠色标记 = 优先方向（几何 + 应用）；<span class="tag-known" style="display:inline-block;position:relative;top:-1px;">已知</span> = 经济学/CIMA 范围内，这一年只需唤醒记忆。带"▸ 核心概念"按钮的块，点开能看到 1-5 个核心概念 + 信源推荐——目前只填了第 1 年优先方向，其余区域先留白，不提前穷尽。点开每个区域勾选进度，自动保存在这台设备上。</p>
+    <div class="level-bar">
+      <label for="level-select">我现在的台阶</label>
+      <select id="level-select"></select>
+      <span class="level-sum" id="level-sum"></span>
+      <div class="level-note">每块的"入口台阶"是我按内容粗估的，不是标准答案。台阶之差就是你和这块之间的缺口，点开块能看到前置台阶和一句"用小学 4 年级的话说"。那句话只给直觉（对应"懂"的第 2 层以内），不等于懂证明。</div>
+    </div>
     <div class="mosaic" id="mosaic"></div>
   </section>
 
@@ -509,6 +529,53 @@
     ]},
   ];
 
+  var LEVELS = ['小学 4 年级','初中','高中','大学低年级（微积分 / 线代 / 概率统计）','数学本科高年级（实分析 / 抽代 / 拓扑）','研究生方向课'];
+  var LEVEL_SHORT = ['小学 4 年级','初中','高中','大学低年级','数学本科高年级','研究生方向课'];
+
+  // lv = 入口台阶（1-6，按内容粗估）；plain = 用小学 4 年级的话说；bridge = 前置台阶
+  var gapData = {
+    '初等代数': {lv:2, plain:'用字母代替还不知道的数，然后像解谜一样把它找出来。', bridge:['四则运算','分数与比例']},
+    '线性代数：向量与矩阵': {lv:4, plain:'一个方向加一个长度叫向量；矩阵是一张规则表，能把所有向量一起挪动、拉伸、转个方向。', bridge:['坐标系','解方程组']},
+    '线性代数：特征值与特征向量': {lv:4, plain:'有些方向被规则表拉伸后方向不变，只是变长或变短，这些方向和倍数就是它的特征。', bridge:['向量与矩阵','解方程组']},
+    '欧几里得几何公理体系': {lv:2, plain:'先约定几条谁都同意的最简单规矩，再一步一步推出所有图形定理，不许凭感觉。', bridge:['认识图形','简单推理']},
+    '解析几何': {lv:3, plain:'给平面铺上格子，每个点就有了两个数，图形就变成了方程。', bridge:['坐标系','方程']},
+    '三角学': {lv:3, plain:'圆上一个点转了一个角度，它的高度和横向位置各是多少，就是正弦和余弦。', bridge:['角度','圆','比例']},
+    '向量几何': {lv:3, plain:'用带方向的箭头做加法；两个箭头有多顺，就是点积。', bridge:['坐标系','三角学']},
+    '微分几何：曲线与曲率': {lv:4, plain:'一条线弯得有多急？拿一个刚好贴住它的圆，圆越小，弯得越急。', bridge:['导数','向量','圆']},
+    '凸几何': {lv:3, plain:'橡皮筋套住一堆钉子，绷紧后围出的形状；形状里任意两点连线都不出界，就叫凸。', bridge:['认识图形','坐标系']},
+    '计算几何': {lv:4, plain:'让电脑回答"这些点围成什么形状、哪个点离谁最近"，并且回答得快。', bridge:['坐标系','简单算法']},
+    '几何测度论直觉': {lv:5, plain:'怎么给一个怪异图形量"大小"：不只是面积，还有它到底薄到什么程度。', bridge:['面积与长度','极限','实分析：测度与积分']},
+    '分形几何': {lv:3, plain:'放大一个图形，局部和整体长得一样，一直放大都一样；它的"维数"可以不是整数。', bridge:['相似图形','指数与对数']},
+    '极限与连续性': {lv:4, plain:'数越来越靠近某个值，我们就说它的极限是这个值；连续就是画线时笔不用离开纸。', bridge:['函数','数列']},
+    '微分学': {lv:4, plain:'一条曲线在某一点上"此刻有多陡"。', bridge:['函数与图像','极限']},
+    '积分学': {lv:4, plain:'把一块弯弯曲曲的面积，切成无数条细长条再加起来。', bridge:['面积','极限','微分学']},
+    '多元微积分': {lv:4, plain:'东西不止受一个量影响时，固定别的、只看其中一个怎么变；站在山坡上，哪个方向最陡。', bridge:['微分学','积分学','向量']},
+    '偏微分方程入门': {lv:5, plain:'描述一个量怎样随位置和时间一起变化的规律，比如热怎么扩散、波怎么传。', bridge:['多元微积分','常微分方程']},
+    '傅里叶分析': {lv:5, plain:'任何一段声音或波形，都能拆成很多个简单的音叠在一起；找出每个音有多响。', bridge:['三角学','级数与收敛','积分学']},
+    '调和分析入门': {lv:6, plain:'研究怎样把复杂的波拆成简单的波，并且怎么拆才不会失控。这是王虹所在的领域。', bridge:['傅里叶分析','实分析：测度与积分']},
+    '统计力学与动理论基础：玻尔兹曼方程': {lv:6, plain:'一大群粒子，不跟踪每一个，只问"这里有多少粒子、跑得多快"，以及它们怎么互相撞来撞去。', bridge:['偏微分方程入门','概率论基础']},
+    '标度极限与涌现：Boltzmann-Grad 极限': {lv:6, plain:'粒子越来越多、越来越小，在特定的比例下，一团粒子的整体行为会趋向一个固定的规律。', bridge:['玻尔兹曼方程','极限与连续性']},
+    '线性规划': {lv:4, plain:'在一堆限制条件下，找出让目标最大或最小的方案；答案总藏在可行区域的角上。', bridge:['不等式','坐标系']},
+    '凸优化': {lv:5, plain:'目标像一个碗：只有一个最低点，顺着坡往下走就一定到。', bridge:['凸几何','多元微积分','线性规划']},
+    '动态规划': {lv:4, plain:'大问题拆成小问题，小问题的答案记下来，别重复算。', bridge:['递推','函数']},
+    '梯度下降与迭代方法': {lv:4, plain:'站在山坡上，每次朝最陡的下坡方向迈一小步，反复走。', bridge:['多元微积分','函数']},
+    '线性代数在 ML 中的应用（SVD/PCA）': {lv:4, plain:'把一堆数据压扁成最少的几个"主要方向"，同时保留最多信息。', bridge:['向量与矩阵','特征值与特征向量']},
+    '高维几何与维度诅咒': {lv:4, plain:'维度越多，空间越大也越空，几乎所有点都离得一样远，"最近的邻居"就失去了意义。', bridge:['向量几何','概率论基础']},
+    '度量学习与嵌入空间几何': {lv:4, plain:'让电脑自己学会"什么叫相似"：相似的东西放得近，不相似的放得远。', bridge:['向量几何','线性代数在 ML 中的应用']},
+    '空间统计学': {lv:4, plain:'相邻的地方往往相似；怎么把这种"近朱者赤"量出来，并据此推断没测过的地方。', bridge:['统计推断','坐标系']},
+    '选址理论与区位几何': {lv:3, plain:'店开在哪里，才能让所有顾客加起来走的路最短？', bridge:['距离','平均数']},
+    '排队论': {lv:4, plain:'来的人和服务的速度对不上，队就越排越长；用数算出需要开几个窗口。', bridge:['概率论基础','平均数']},
+    '库存优化数学模型': {lv:4, plain:'订一次货要花固定费用，存货又占资金；找出订多少、什么时候订，总成本最低。', bridge:['函数的最大最小值','概率论基础']},
+    '计量经济学中的几何直觉': {lv:4, plain:'回归就是把数据"投影"到一条线上，找离数据最近的那条线。', bridge:['向量几何','统计推断']},
+    '数据可视化的几何原理': {lv:2, plain:'用位置、长度、颜色把数字变成图，让眼睛一眼看出差异；不同的画法，眼睛的准确度不一样。', bridge:['坐标系','比例']},
+    '几何深度学习（Geometric Deep Learning）': {lv:5, plain:'数据有形状（图、曲面、对称性）时，让模型尊重这些形状，而不是把它们压成一长串数。', bridge:['神经网络的数学基础','向量与矩阵','抽象代数入门：群']},
+    '希尔伯特第六问题：从牛顿力学到流体方程': {lv:6, plain:'能不能只用最底层的"撞球规则"，一步步严格推出空气和水的流动规律？这是 1900 年留下的问题。', bridge:['玻尔兹曼方程','标度极限与涌现']}
+  };
+
+  var LEVEL_KEY = 'mathPanoramaLevel';
+  var curLevel = 4;
+  try { var sv = parseInt(localStorage.getItem(LEVEL_KEY), 10); if(sv >= 1 && sv <= 6) curLevel = sv; } catch(e){}
+
   var zoomChain = ['凸集与凸包','支持超平面定理','凸函数与 Jensen 不等式','凸优化的几何直觉','多面体几何','John 椭球','Brunn–Minkowski 不等式','SVM 的几何解释','高维凸体的反直觉现象','凸几何与最优传输的接口'];
 
   var STORE_KEY = 'mathPanoramaProgress';
@@ -566,6 +633,7 @@
         '<input type="checkbox" id="' + id + '"' + (checked ? ' checked' : '') + ' />' +
         '<label for="' + id + '">' + tagBadges(p.tags) + p.n + pieceKnownLabel(p.tags) +
         (p.note ? '<span class="tag-note">' + p.note + '</span>' : '') +
+        (gapData[p.n] ? '<span class="gap-tag" data-lv="' + gapData[p.n].lv + '" hidden></span>' : '') +
         (p.concepts ? '<button type="button" class="content-btn" data-content="' + id + '">▸ 核心概念</button>' : '') +
         '</label>';
 
@@ -576,7 +644,12 @@
         content.className = 'piece-content';
         content.id = 'content-' + id;
 
-        var html = '<div class="concept-row">' + p.concepts.map(function(c){
+        var g = gapData[p.n];
+        var html = '';
+        if(g){
+          html += '<div class="gap-row"><span class="gap-pill" data-lv="' + g.lv + '"></span><span>入口台阶：' + LEVEL_SHORT[g.lv - 1] + '</span></div>';
+        }
+        html += '<div class="concept-row">' + p.concepts.map(function(c){
           return '<span class="concept-chip">' + c + '</span>';
         }).join('') + '</div>';
 
@@ -584,6 +657,13 @@
           html += '<div class="src-list">' + p.srcs.map(function(s){
             return '<div class="src-item"><span class="src-k">' + s.k + '</span><span class="src-t">' + s.t + '</span></div>';
           }).join('') + '</div>';
+        }
+
+        if(g){
+          html += '<div class="plain-label">用小学 4 年级的话说 · 只到直觉</div>' +
+            '<div class="plain-text">' + g.plain + '</div>' +
+            '<div class="bridge-label">前置台阶</div>' +
+            '<div class="bridge-row">' + g.bridge.map(function(b){ return '<span class="bridge-chip">' + b + '</span>'; }).join('') + '</div>';
         }
 
         if(p.zoom){
@@ -638,6 +718,40 @@
   });
 
   updateCounts();
+
+  // ---- 缺口：我现在的台阶 vs 每块的入口台阶 ----
+  var sel = document.getElementById('level-select');
+  LEVELS.forEach(function(name, i){
+    var o = document.createElement('option');
+    o.value = i + 1;
+    o.textContent = (i + 1) + ' · ' + name;
+    sel.appendChild(o);
+  });
+  sel.value = curLevel;
+
+  function refreshGaps(){
+    var ok = 0, near = 0, far = 0;
+    document.querySelectorAll('[data-lv]').forEach(function(el){
+      var d = parseInt(el.getAttribute('data-lv'), 10) - curLevel;
+      if(el.classList.contains('gap-pill')){
+        el.textContent = d <= 0 ? '✓ 够得着' : '差 ' + d + ' 级';
+        el.classList.toggle('ok', d <= 0);
+      } else {
+        el.textContent = d > 0 ? '差 ' + d + ' 级' : '';
+        el.hidden = d <= 0;
+        if(d <= 0) ok++; else if(d <= 2) near++; else far++;
+      }
+    });
+    document.getElementById('level-sum').textContent =
+      '36 块有入口台阶：够得着 ' + ok + ' · 差 1-2 级 ' + near + ' · 差 3 级以上 ' + far;
+  }
+
+  sel.addEventListener('change', function(){
+    curLevel = parseInt(sel.value, 10);
+    try { localStorage.setItem(LEVEL_KEY, String(curLevel)); } catch(err){}
+    refreshGaps();
+  });
+  refreshGaps();
 
   // ---- landmarks 2026 ----
   var l2026 = document.getElementById('landmarks-2026');
