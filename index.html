@@ -186,6 +186,24 @@
   .level-bar select:focus-visible{ outline:2px solid var(--brass); outline-offset:2px; }
   .level-sum{ font-family:var(--mono); font-size:.74rem; color:var(--ink-soft); }
   .level-note{ flex-basis:100%; font-size:.76rem; color:var(--ink-soft); line-height:1.6; }
+  .quest{ margin:0 0 1.4rem; border:1px solid var(--grid-strong); }
+  .quest-bar{ display:flex; flex-wrap:wrap; align-items:center; gap:.5rem 1rem; padding:.7rem .9rem; background:var(--paper-2); }
+  .quest-bar label{ font-family:var(--mono); font-size:.74rem; color:var(--ink-soft); }
+  .quest-bar select{ font:inherit; font-size:.88rem; color:var(--ink); background:var(--paper); border:1px solid var(--grid-strong); padding:.25rem .5rem; border-radius:2px; max-width:100%; }
+  .quest-bar select:focus-visible{ outline:2px solid var(--brass); outline-offset:2px; }
+  .quest-out{ padding:0 .9rem; }
+  .quest-out:not(:empty){ padding:.8rem .9rem 1rem; }
+  .quest-have{ font-size:.78rem; color:var(--ink-soft); margin-bottom:.8rem; line-height:1.7; }
+  .quest-have b{ font-family:var(--mono); font-size:.68rem; color:var(--teal); font-weight:400; margin-right:.4rem; }
+  .quest-stage{ display:grid; grid-template-columns:5.2rem 1fr; gap:.3rem .8rem; padding:.55rem 0; border-top:1px dotted var(--grid); }
+  .quest-stage-h{ font-family:var(--mono); font-size:.72rem; color:var(--brass); padding-top:.2rem; }
+  .quest-items{ display:flex; flex-direction:column; gap:.25rem; }
+  .quest-item{ display:flex; align-items:baseline; gap:.5rem; font-size:.88rem; cursor:pointer; }
+  .quest-item input{ accent-color:var(--brass); flex:none; }
+  .quest-item.base{ color:var(--ink-soft); }
+  .quest-tag{ font-family:var(--mono); font-size:.68rem; color:var(--ink-soft); border:1px dashed var(--grid-strong); padding:0 .35em; border-radius:2px; margin-left:.3em; white-space:nowrap; }
+  .quest-tag.boss{ color:var(--oxblood); border:1px solid var(--oxblood); }
+  .quest-empty{ font-size:.8rem; color:var(--ink-soft); }
   .gap-tag{ font-family:var(--mono); font-size:.68rem; color:var(--oxblood); border:1px solid var(--oxblood-soft); padding:0 .35em; border-radius:2px; margin-left:.4em; white-space:nowrap; }
   .gap-row{ display:flex; flex-wrap:wrap; align-items:center; gap:.5rem; margin-bottom:.6rem; font-size:.8rem; color:var(--ink-soft); }
   .gap-pill{ font-family:var(--mono); font-size:.72rem; padding:.05rem .5rem; border-radius:2px; border:1px solid var(--oxblood); color:var(--oxblood); }
@@ -314,6 +332,14 @@
       <select id="level-select"></select>
       <span class="level-sum" id="level-sum"></span>
       <div class="level-note">每块的"入口台阶"是我按内容粗估的，不是标准答案。台阶之差就是你和这块之间的缺口，点开块能看到前置台阶和一句"用小学 4 年级的话说"。那句话只给直觉（对应"懂"的第 2 层以内），不等于懂证明。</div>
+    </div>
+    <div class="quest">
+      <div class="quest-bar">
+        <label for="quest-select">我想到达</label>
+        <select id="quest-select"></select>
+        <span class="level-sum" id="quest-sum"></span>
+      </div>
+      <div id="quest-out" class="quest-out"></div>
     </div>
     <div class="mosaic" id="mosaic"></div>
   </section>
@@ -596,6 +622,7 @@
     return '';
   }
 
+  var pieceIndex = {};
   var mosaic = document.getElementById('mosaic');
   var totalPieces = 0;
 
@@ -624,6 +651,7 @@
 
     cat.pieces.forEach(function(p, idx){
       var id = 'piece-' + cat.id + '-' + idx;
+      pieceIndex[p.n] = {p:p, id:id};
       var row = document.createElement('div');
       row.className = 'piece';
       var checked = !!state[id];
@@ -703,6 +731,7 @@
       e.target.closest('.piece').classList.toggle('done', e.target.checked);
       try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch(err){}
       updateCounts();
+      renderQuest();
     }
   });
 
@@ -750,8 +779,121 @@
     curLevel = parseInt(sel.value, 10);
     try { localStorage.setItem(LEVEL_KEY, String(curLevel)); } catch(err){}
     refreshGaps();
+    renderQuest();
   });
   refreshGaps();
+
+  // ---- 目标路径：从我现在的台阶，到一个目标 ----
+  var BASE = {'四则运算':1,'分数与比例':1,'认识图形':1,'面积':1,'面积与长度':1,'距离':1,'平均数':1,
+    '简单推理':2,'坐标系':2,'方程':2,'解方程组':2,'角度':2,'圆':2,'比例':2,'相似图形':2,'不等式':2,
+    '函数':3,'数列':3,'函数与图像':3,'指数与对数':3,'简单算法':3,'递推':3,'函数的最大最小值':4};
+  var ALIAS = {'导数':'微分学','向量':'向量几何','极限':'极限与连续性','向量与矩阵':'线性代数：向量与矩阵',
+    '特征值与特征向量':'线性代数：特征值与特征向量','玻尔兹曼方程':'统计力学与动理论基础：玻尔兹曼方程',
+    '标度极限与涌现':'标度极限与涌现：Boltzmann-Grad 极限','线性代数在 ML 中的应用':'线性代数在 ML 中的应用（SVD/PCA）'};
+  var QUESTS = [
+    {name:'看懂王虹的证明框架', boss:['调和分析入门','几何测度论直觉']},
+    {name:'看懂邓煜的玻尔兹曼推导', boss:['标度极限与涌现：Boltzmann-Grad 极限','希尔伯特第六问题：从牛顿力学到流体方程']},
+    {name:'掌握凸优化（做决策分析）', boss:['凸优化']},
+    {name:'零售线：选址 + 库存 + 排队', boss:['选址理论与区位几何','库存优化数学模型','排队论']},
+    {name:'几何深度学习', boss:['几何深度学习（Geometric Deep Learning）']}
+  ];
+
+  function resolveNode(name){
+    var key = ALIAS[name] || name;
+    if(pieceIndex[key]){
+      var pi = pieceIndex[key];
+      var tags = pi.p.tags || [];
+      var cleared = !!state[pi.id] || (tags.indexOf('known') > -1 && curLevel >= 4);
+      return {key:key, kind:'piece', id:pi.id, cleared:cleared, data:gapData[key] || null};
+    }
+    var lv = BASE[key];
+    var bc = !!state['base-' + key] || (lv !== undefined && lv <= curLevel);
+    return {key:key, kind:'base', id:'base-' + key, cleared:bc, lv:lv, data:null};
+  }
+
+  function buildPlan(bosses){
+    var info = {}, order = [], have = {};
+    function visit(name){
+      var n = resolveNode(name);
+      if(info[n.key]) return info[n.key].stage;
+      if(n.cleared){ have[n.key] = true; info[n.key] = {stage:0}; return 0; }
+      info[n.key] = {stage:1, node:n};
+      var st = 1;
+      if(n.data){
+        n.data.bridge.forEach(function(b){
+          var s = visit(b);
+          if(s + 1 > st) st = s + 1;
+        });
+      }
+      info[n.key].stage = st;
+      order.push(n.key);
+      return st;
+    }
+    bosses.forEach(visit);
+    var stages = {};
+    order.forEach(function(k){ (stages[info[k].stage] = stages[info[k].stage] || []).push(info[k].node); });
+    return {stages:stages, have:Object.keys(have), total:order.length};
+  }
+
+  function renderQuest(){
+    var out = document.getElementById('quest-out');
+    var qi = parseInt(document.getElementById('quest-select').value, 10);
+    if(isNaN(qi) || !QUESTS[qi]){ out.innerHTML = ''; document.getElementById('quest-sum').textContent = ''; return; }
+    var q = QUESTS[qi];
+    var plan = buildPlan(q.boss);
+    var html = '';
+    if(plan.total === 0){
+      html = '<div class="quest-empty">按你现在的台阶和已勾选的块，这个目标的前置全部具备。</div>';
+    } else {
+      if(plan.have.length){
+        html += '<div class="quest-have"><b>你已具备</b>' + plan.have.join(' · ') + '</div>';
+      }
+      Object.keys(plan.stages).map(Number).sort(function(a,b){return a-b;}).forEach(function(s){
+        var items = plan.stages[s];
+        html += '<div class="quest-stage"><div class="quest-stage-h">第 ' + s + ' 关' + (items.length > 1 ? '<br>可并行' : '') + '</div><div class="quest-items">';
+        items.forEach(function(n){
+          var isBoss = q.boss.indexOf(n.key) > -1;
+          var tags = '';
+          if(isBoss) tags += '<span class="quest-tag boss">目标</span>';
+          if(n.kind === 'base') tags += '<span class="quest-tag">基础 · ' + (n.lv ? LEVEL_SHORT[n.lv - 1] : '台阶未标') + '</span>';
+          else if(!n.data) tags += '<span class="quest-tag">待补：这块还没填内容和前置</span>';
+          else {
+            var d = n.data.lv - curLevel;
+            if(d > 0) tags += '<span class="gap-tag">差 ' + d + ' 级</span>';
+          }
+          html += '<label class="quest-item' + (n.kind === 'base' ? ' base' : '') + '"><input type="checkbox" data-qid="' + n.id + '" data-qname="' + n.key + '" /><span>' + n.key + tags + '</span></label>';
+        });
+        html += '</div></div>';
+      });
+    }
+    out.innerHTML = html;
+    document.getElementById('quest-sum').textContent = plan.total ? ('还剩 ' + plan.total + ' 块要过，' + Object.keys(plan.stages).length + ' 关') : '前置已齐';
+  }
+
+  var qsel = document.getElementById('quest-select');
+  var q0 = document.createElement('option');
+  q0.value = ''; q0.textContent = '选一个目标，看从现在走过去的路径';
+  qsel.appendChild(q0);
+  QUESTS.forEach(function(q, i){
+    var o = document.createElement('option');
+    o.value = i; o.textContent = q.name;
+    qsel.appendChild(o);
+  });
+  qsel.addEventListener('change', renderQuest);
+
+  document.getElementById('quest-out').addEventListener('change', function(e){
+    if(!e.target.matches('input[type=checkbox]')) return;
+    var id = e.target.dataset.qid;
+    state[id] = e.target.checked;
+    var main = document.getElementById(id);
+    if(main){
+      main.checked = e.target.checked;
+      main.closest('.piece').classList.toggle('done', e.target.checked);
+    }
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch(err){}
+    updateCounts();
+    renderQuest();
+  });
 
   // ---- landmarks 2026 ----
   var l2026 = document.getElementById('landmarks-2026');
